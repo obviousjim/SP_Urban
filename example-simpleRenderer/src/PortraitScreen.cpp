@@ -29,6 +29,7 @@ void PortraitScreen::setup(){
 	
 	cam.setup();
 	cam.speed = 20;
+	cam.cameraPositionFile = name + "_campos.xml";
 	cam.autosavePosition = true;
 	cam.targetNode.setPosition(ofVec3f());
 	cam.targetNode.setOrientation(ofQuaternion());

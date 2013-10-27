@@ -29,11 +29,11 @@ void testApp::setup(){
     
 	gui.add(xshift.setup("xshift", ofParameter<float>(), -.15, .15));
     gui.add(yshift.setup("yshift", ofParameter<float>(), -.15, .15));
-    gui.add(xsimplify.setup("xsimplify", ofParameter<float>(), 1, 8));
-    gui.add(ysimplify.setup("ysimplify", ofParameter<float>(), 1, 8));
-	gui.add(scanLines.setup("scanlines", ofParameter<bool>()));
+//    gui.add(xsimplify.setup("xsimplify", ofParameter<float>(), 1, 8));
+//    gui.add(ysimplify.setup("ysimplify", ofParameter<float>(), 1, 8));
+//	gui.add(scanLines.setup("scanlines", ofParameter<bool>()));
 	gui.add(debug.setup("debug",ofParameter<bool>()));
-	
+	gui.add(zclip.setup("zclip",ofParameter<float>(), 500, 2000));
     gui.add(loadNew.setup("load new"));
 
         
@@ -79,6 +79,8 @@ void testApp::setup(){
 	screens.push_back(&centerFacade);
 	screens.push_back(&rightFacade);
 
+	
+
 
 
 //	if(leftmask.getWidth() != leftFacade.getWidth() || leftmask.getHeight() != leftFacade.getHeight()){
@@ -96,7 +98,7 @@ void testApp::setup(){
 	//attemping to load the last scene
     loadDefaultScene();
 	
-
+	generateGeometry();
 }
 
 //--------------------------------------------------------------
@@ -149,18 +151,8 @@ void testApp::update(){
     
     //copy any GUI changes into the mesh
     renderer.setXYShift(ofVec2f(xshift,yshift));
-    renderer.setSimplification(ofVec2f(xsimplify,ysimplify));
+	renderer.farClip = zclip;
 
-	scanlines.clear();
-	ofVec2f simp = renderer.getSimplification();
-	for(int y = 0; y < 480; y += simp.y){
-		for(int x = 0; x < 640; x += simp.x){
-			scanlines.addVertex(ofVec3f(x,y,0));
-			scanlines.addVertex(ofVec3f(x+simp.x,y,0));
-		}
-	}
-	
-	scanlines.setMode(OF_PRIMITIVE_LINES);
     //update the mesh if there is a new depth frame in the player
     player.update();
     if(player.isFrameNew()){
@@ -175,7 +167,84 @@ void testApp::update(){
 			screens[i]->cam.applyRotation = screens[i]->cam.applyTranslation = false;
 		}
 	}
+}
 
+
+void testApp::generateGeometry(){
+	
+	mesh.clear();
+
+	int columns = 40;
+	int vertsPerColumn = 3;
+	float colStep = 640. / columns ;
+	float vertStep = colStep / (vertsPerColumn+1);
+
+	bool skipping = false;
+	
+	cout << "creating mesh with colstep " << colStep << " and vert step " << vertStep << endl;
+
+	for(int c = 0; c < columns; c++){
+		//draw one column
+		
+		ofFloatColor col;
+		col = ofFloatColor::fromHsb(ofRandomuf(), 1.0, 1.0);		
+		for(int y = 0; y < 480; y += vertStep){
+			if(skipping){
+				skipping = ofRandomuf() > .7;
+				col = ofFloatColor::fromHsb(ofRandomuf(), 1.0, 1.0);
+			}
+			else{				
+				for(int x = c * colStep; x < (c+1) * colStep - vertStep; x += vertStep ) {
+					
+					//add  two triangles for each
+					ofIndexType startIndex = mesh.getNumIndices();
+					mesh.addIndex(startIndex+0);
+					mesh.addIndex(startIndex+1);
+					mesh.addIndex(startIndex+2);
+
+					mesh.addIndex(startIndex+3);
+					mesh.addIndex(startIndex+4);
+					mesh.addIndex(startIndex+5);
+									
+					ofVec3f a = ofVec3f(x,y,0);
+					ofVec3f b = ofVec3f(x+vertStep,y,0);
+					ofVec3f c = ofVec3f(x+vertStep,y+vertStep,0);
+					ofVec3f d = ofVec3f(x,y+vertStep,0);
+					
+					mesh.addVertex(a);
+					mesh.addVertex(b);
+					mesh.addVertex(d);
+
+					mesh.addVertex(b);
+					mesh.addVertex(c);
+					mesh.addVertex(d);
+					
+					//TODO: colors!!!
+//					ofFloatColor color(ofRandomuf(),ofRandomuf(),ofRandomuf());
+					mesh.addColor(col);
+					mesh.addColor(col);
+					mesh.addColor(col);
+					
+					mesh.addColor(col);
+					mesh.addColor(col);
+					mesh.addColor(col);
+				}
+				
+				skipping = ofRandomuf() > .95;				
+			}
+		}
+	}
+
+	renderer.setSimplification( ofVec2f(vertStep,vertStep) );
+	
+////	float step = simp.x;
+//	for(int y = 0; y < 480; y += renderer.getSimplification().y){
+//		for(int x = 0; x < 640; x+= meshWidth + meshGapX){
+//			for(int m = x; m < x + meshWidth; x++){
+//
+//			}
+//		}
+//	}
 }
 
 //--------------------------------------------------------------
@@ -189,20 +258,15 @@ void testApp::draw(){
 			ofRect(screens[i]->rect);
 		}
 		
-		
 		//PORTRAIT
 		ofEnableBlendMode(OF_BLENDMODE_SCREEN);
 		ofSetColor(ofColor::white);
         glEnable(GL_DEPTH_TEST);
 		for(int i = 0; i < screens.size(); i++){
 			screens[i]->cam.begin(screens[i]->rect);
-			for(int n = 0; n < 100; n++){
-				ofNode nd;
-				nd.setPosition(ofRandom(-50,50),ofRandom(-50,50),ofRandom(-50,50));
-				nd.draw();
-			}
 			renderer.bindRenderer();
-			scanlines.draw();
+			renderer.getShader().setUniform1f("flowPosition", ofGetFrameNum());
+			mesh.draw();
 			renderer.unbindRenderer();
 			screens[i]->cam.end();
 		}
@@ -216,25 +280,6 @@ void testApp::draw(){
 			}
 		}
 
-//		if(scanLines){
-
-//			
-//			renderer.bindRenderer();
-//			m.draw();
-//			renderer.unbindRenderer();
-//		}
-//		else{
-//			renderer.drawWireFrame();
-//		}
-		
-	
-
-		
-//		rightmask.draw(rightFacade);
-//		centermask.draw(centerFacade);
-//		leftmask.draw(leftFacade);
-
-		
 		if(debug){
 			ofPushStyle();
 			ofEnableAlphaBlending();
@@ -266,7 +311,7 @@ void testApp::keyPressed(int key){
     if(key == ' '){
         player.togglePlay();
     }
-	if(key == 'r'){
+	if(key == 'R'){
 		renderer.reloadShader();
 	}
 }

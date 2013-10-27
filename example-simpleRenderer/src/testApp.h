@@ -43,6 +43,8 @@ class testApp : public ofBaseApp{
     
     void exit();
     
+	void generateGeometry();
+	
     ofxRGBDPlayer player;
     //either one of these will work,
     //you can see the performance difference
@@ -58,6 +60,7 @@ class testApp : public ofBaseApp{
     ofxFloatSlider ysimplify;
 	ofxToggle scanLines;
 	ofxToggle debug;
+	ofxFloatSlider zclip;
 	
     ofxButton loadNew;
     
@@ -75,18 +78,6 @@ class testApp : public ofBaseApp{
 	PortraitScreen rightFacade;
 	
 	ofMesh scanlines;
-	
-//	ofRectangle* highlightRect;
-//	vector<ofRectangle> screenrects;
-//	ofRectangle led1;
-//	ofRectangle led2;
-	
-//	ofRectangle leftFacade;
-//	ofRectangle centerFacade;
-//	ofRectangle rightFacade;
-//
-//	ofImage leftmask;
-//	ofImage centermask;
-//	ofImage rightmask;
+	ofVboMesh mesh;
 	
 };

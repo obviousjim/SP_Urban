@@ -32,6 +32,9 @@ uniform vec2 colorPP;
 uniform vec3 dK;
 uniform vec2 dP;
 
+
+uniform float flowPosition;
+
 varying float positionValid;
 
 const float epsilon = 1e-6;
@@ -54,13 +57,16 @@ void main(void)
     //align to texture
     vec2 halfvec = vec2(.5,.5);
 	
-    float depth = depthAtPosition(floor(gl_Vertex.xy) + halfvec);
-    float right = depthAtPosition(floor(gl_Vertex.xy + vec2(simplify.x,0.0))  + halfvec );
-    float down  = depthAtPosition(floor(gl_Vertex.xy + vec2(0.0,simplify.y))  + halfvec );
-    float left  = depthAtPosition(floor(gl_Vertex.xy + vec2(-simplify.x,0.0)) + halfvec );
-    float up    = depthAtPosition(floor(gl_Vertex.xy + vec2(0.0,-simplify.y)) + halfvec );
-    float bl    = depthAtPosition(vec2(floor(gl_Vertex.x - simplify.x),floor( gl_Vertex.y + simplify.y)) + halfvec );
-    float ur    = depthAtPosition(vec2(floor(gl_Vertex.x  + simplify.x),floor(gl_Vertex.y - simplify.y)) + halfvec );
+	vec2 samplePos = vec2(gl_Vertex.x, + mod(gl_Vertex.y + flowPosition, 480.0));
+//	vec2 depthPos = gl_Vertex.xy;
+	
+    float depth = depthAtPosition(floor(samplePos.xy) + halfvec);
+    float right = depthAtPosition(floor(samplePos.xy + vec2(simplify.x,0.0))  + halfvec );
+    float down  = depthAtPosition(floor(samplePos.xy + vec2(0.0,simplify.y))  + halfvec );
+    float left  = depthAtPosition(floor(samplePos.xy + vec2(-simplify.x,0.0)) + halfvec );
+    float up    = depthAtPosition(floor(samplePos.xy + vec2(0.0,-simplify.y)) + halfvec );
+    float bl    = depthAtPosition(vec2(floor(samplePos.x - simplify.x),floor( samplePos.y + simplify.y)) + halfvec );
+    float ur    = depthAtPosition(vec2(floor(samplePos.x  + simplify.x),floor(samplePos.y - simplify.y)) + halfvec );
 //
 //    //cull invalid verts
     positionValid = (depth < farClip &&
@@ -88,8 +94,8 @@ void main(void)
 					 ) ? 1.0 : 0.0;
 	
 	
-	vec4 pos = vec4((gl_Vertex.x - principalPoint.x) * depth / fov.x,
-                    (gl_Vertex.y - principalPoint.y) * depth / fov.y, depth, 1.0);
+	vec4 pos = vec4((samplePos.x - principalPoint.x) * depth / fov.x,
+                    (samplePos.y - principalPoint.y) * depth / fov.y, depth, 1.0);
 	
 	
     //projective texture on the geometry
