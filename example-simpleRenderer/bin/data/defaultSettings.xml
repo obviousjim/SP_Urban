@@ -1,0 +1,10 @@
+<tests>
+	<xshift>-0.0405</xshift>
+	<yshift>-0.0405</yshift>
+	<xsimplify>3.555</xsimplify>
+	<ysimplify>3.45</ysimplify>
+	<flip_texture>0</flip_texture>
+<tests/>
+<scanlines>0</scanlines>
+<debug>1</debug>
+</tests>
