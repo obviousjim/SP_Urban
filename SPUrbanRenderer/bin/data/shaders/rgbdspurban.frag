@@ -4,7 +4,8 @@
 uniform sampler2DRect colorTex;
 uniform float brightness;
 uniform float contrast;
-
+uniform float headSphereRadius;
+uniform float headEffectFalloff;
 varying float positionValid;
 varying float headDistance;
 
@@ -16,7 +17,7 @@ void main()
     	discard;
         return;
     }
-	vec4 col = texture2DRect(colorTex, gl_TexCoord[0].st) * gl_Color;
+	vec4 col = texture2DRect(colorTex, gl_TexCoord[0].st);
 	
 	//Apply contrast
 	col.rgb = ((col.rgb - 0.5) * max(contrast, 0.0)) + 0.5;
@@ -24,7 +25,6 @@ void main()
 	// Apply brightness.
 	col.rgb += brightness;
 		
-
-	gl_FragColor = col * vec4(max(1. - (headDistance/200.0), 0.));
+	gl_FragColor = mix(gl_Color, col, max(1. - ( max(headDistance - headSphereRadius,0.) / headEffectFalloff), 0.));
 	gl_FragColor.a = 1.0;
 }

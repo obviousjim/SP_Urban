@@ -595,8 +595,8 @@
 		E793AD87181CE5FD00FDB0E4 /* shaders */ = {
 			isa = PBXGroup;
 			children = (
-				E793AD88181CE5FD00FDB0E4 /* rgbdspurban.frag */,
 				E793AD89181CE5FD00FDB0E4 /* rgbdspurban.vert */,
+				E793AD88181CE5FD00FDB0E4 /* rgbdspurban.frag */,
 			);
 			path = shaders;
 			sourceTree = "<group>";

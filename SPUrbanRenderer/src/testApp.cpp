@@ -72,6 +72,9 @@ void testApp::setup(){
 	gui.add(timePerPortrait.setup("time per portrait", ofParameter<float>(), 10, 60));
 	gui.add(flowSpeed.setup("flow", ofParameter<float>(), 0, 200));
 
+	gui.add(headSphereRadius.setup("head radius", ofParameter<float>(), 0, 300));
+	gui.add(headEffectFalloff.setup("head falloff", ofParameter<float>(), 1, 1000));
+
 	for(int i = 0; i < screens.size(); i++){
 		gui.add( screens[i]->brightness.setup(screens[i]->name + " bri",ofParameter<float>(), 0, 2) );
 		gui.add( screens[i]->contrast.setup(screens[i]->name + " con",ofParameter<float>(), 0, 3) );
@@ -116,25 +119,25 @@ void testApp::setup(){
 }
 
 //--------------------------------------------------------------
-bool testApp::loadNewScene(){
-    ofFileDialogResult r = ofSystemLoadDialog("Select a Scene", true);
-    if(r.bSuccess){
-        return loadScene(r.getPath());
-    }
-    return false;
-}
+//bool testApp::loadNewScene(){
+//    ofFileDialogResult r = ofSystemLoadDialog("Select a Scene", true);
+//    if(r.bSuccess){
+//        return loadScene(r.getPath());
+//    }
+//    return false;
+//}
 
 //--------------------------------------------------------------
-bool testApp::loadDefaultScene(){
-    ofxXmlSettings settings;
-    if(settings.loadFile("RGBDSimpleSceneDefaults.xml")){
-        if(!loadScene(settings.getValue("defaultScene", ""))){
-            return loadNewScene();
-        }
-        return true;
-    }
-    return loadNewScene();
-}
+//bool testApp::loadDefaultScene(){
+//    ofxXmlSettings settings;
+//    if(settings.loadFile("RGBDSimpleSceneDefaults.xml")){
+//        if(!loadScene(settings.getValue("defaultScene", ""))){
+//            return loadNewScene();
+//        }
+//        return true;
+//    }
+//    return loadNewScene();
+//}
 
 //--------------------------------------------------------------
 bool testApp::loadScene(string takeDirectory){
@@ -160,10 +163,6 @@ bool testApp::loadScene(string takeDirectory){
 //--------------------------------------------------------------
 void testApp::update(){
 	
-//    if(loadNew){
-//        loadNewScene();
-//    }
-//    
     //copy any GUI changes into the mesh
     renderer.colorMatrixRotate.x = xrotate;
 	renderer.colorMatrixRotate.y = yrotate;
@@ -260,15 +259,13 @@ void testApp::generateGeometry(){
 					mesh.addVertex(c);
 					mesh.addVertex(d);
 					
-					//TODO: colors!!!
-//					ofFloatColor color(ofRandomuf(),ofRandomuf(),ofRandomuf());
-//					mesh.addColor(col);
-//					mesh.addColor(col);
-//					mesh.addColor(col);
-//					
-//					mesh.addColor(col);
-//					mesh.addColor(col);
-//					mesh.addColor(col);
+					mesh.addColor(col);
+					mesh.addColor(col);
+					mesh.addColor(col);
+					
+					mesh.addColor(col);
+					mesh.addColor(col);
+					mesh.addColor(col);
 				}
 				
 				skipping = ofRandomuf() > .95;				
@@ -330,6 +327,10 @@ void testApp::draw(){
 			renderer.getShader().setUniform2f("headPosition",
 											  headPositions[player.getScene().name].x,
 											  headPositions[player.getScene().name].y);
+			
+			renderer.getShader().setUniform1f("headSphereRadius",headSphereRadius);
+			renderer.getShader().setUniform1f("headEffectFalloff",headEffectFalloff);
+
 			mesh.draw();
 			renderer.unbindRenderer();
 			screens[i]->getCameraRef().end();

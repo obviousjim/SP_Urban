@@ -1,5 +1,4 @@
 <poses>
-    <portrait name=""></portrait>
     <portrait name="ALASDAIR_CLOSE">
         <pose>
             <position>
@@ -70,9 +69,9 @@
     <portrait name="ALICE_CLOSE">
         <pose>
             <position>
-                <X>341.546997070</X>
-                <Y>31.152339935</Y>
-                <Z>671.338073730</Z>
+                <X>341.000000000</X>
+                <Y>31.000000000</Y>
+                <Z>671.000000000</Z>
             </position>
             <rotation>
                 <X>0.071334995</X>
@@ -83,9 +82,9 @@
         </pose>
         <pose>
             <position>
-                <X>163.860916138</X>
-                <Y>135.792282104</Y>
-                <Z>713.720581055</Z>
+                <X>163.000000000</X>
+                <Y>135.000000000</Y>
+                <Z>713.000000000</Z>
             </position>
             <rotation>
                 <X>0.042177726</X>
@@ -96,15 +95,43 @@
         </pose>
         <pose>
             <position>
-                <X>117.732528687</X>
-                <Y>110.119194031</Y>
-                <Z>783.121093750</Z>
+                <X>117.000000000</X>
+                <Y>110.000000000</Y>
+                <Z>783.000000000</Z>
             </position>
             <rotation>
                 <X>-0.012037493</X>
                 <Y>0.874771714</Y>
                 <Z>0.021760959</Z>
                 <W>0.483896732</W>
+            </rotation>
+        </pose>
+    </portrait>
+    <portrait name="JEN_CLOSE">
+        <pose>
+            <position>
+                <X>164.515777588</X>
+                <Y>52.710441589</Y>
+                <Z>652.695312500</Z>
+            </position>
+            <rotation>
+                <X>-0.101876140</X>
+                <Y>0.860579073</Y>
+                <Z>0.189998180</Z>
+                <W>0.461438566</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>72.376251221</X>
+                <Y>126.394874573</Y>
+                <Z>572.601623535</Z>
+            </position>
+            <rotation>
+                <X>-0.088100441</X>
+                <Y>0.902468860</Y>
+                <Z>0.221667796</Z>
+                <W>0.358680457</W>
             </rotation>
         </pose>
     </portrait>

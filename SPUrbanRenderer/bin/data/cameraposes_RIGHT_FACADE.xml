@@ -17,15 +17,30 @@
     <portrait name="ALICE_CLOSE">
         <pose>
             <position>
-                <X>-216.573608398</X>
-                <Y>139.644271851</Y>
-                <Z>612.894897461</Z>
+                <X>-216.000000000</X>
+                <Y>139.000000000</Y>
+                <Z>612.000000000</Z>
             </position>
             <rotation>
                 <X>0.020505961</X>
                 <Y>0.879243553</Y>
                 <Z>0.038004443</Z>
                 <W>-0.474411249</W>
+            </rotation>
+        </pose>
+    </portrait>
+    <portrait name="JEN_CLOSE">
+        <pose>
+            <position>
+                <X>-239.706573486</X>
+                <Y>-213.729019165</Y>
+                <Z>611.325744629</Z>
+            </position>
+            <rotation>
+                <X>-0.068408623</X>
+                <Y>0.930481315</Y>
+                <Z>-0.229839876</Z>
+                <W>-0.276944697</W>
             </rotation>
         </pose>
     </portrait>

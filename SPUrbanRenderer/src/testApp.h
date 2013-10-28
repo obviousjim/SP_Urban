@@ -63,10 +63,12 @@ class testApp : public ofBaseApp{
 	ofxFloatSlider zclip;
 	ofxFloatSlider timePerPortrait;
 	ofxFloatSlider flowSpeed;
-    ofxButton loadNew;
-    
-    bool loadNewScene();
-    bool loadDefaultScene();
+	
+	ofxFloatSlider headSphereRadius;
+	ofxFloatSlider headEffectFalloff;
+
+//    bool loadNewScene();
+//    bool loadDefaultScene();
     bool loadScene(string takeDirectory);
 
 	void saveHeadPositions();
