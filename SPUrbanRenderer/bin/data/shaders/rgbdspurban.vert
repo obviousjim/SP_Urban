@@ -1,12 +1,10 @@
 #version 110
 #extension GL_ARB_texture_rectangle : enable
 
-						  
 uniform vec2 dim;
 uniform vec2 textureScale;
 
 // CORRECTION
-uniform vec2 shift;
 uniform vec2 scale;
 
 // DEPTH
@@ -34,6 +32,8 @@ uniform vec2 dP;
 
 
 uniform float flowPosition;
+uniform vec2 headPosition;
+varying float headDistance;
 
 varying float positionValid;
 
@@ -67,8 +67,8 @@ void main(void)
     float up    = depthAtPosition(floor(samplePos.xy + vec2(0.0,-simplify.y)) + halfvec );
     float bl    = depthAtPosition(vec2(floor(samplePos.x - simplify.x),floor( samplePos.y + simplify.y)) + halfvec );
     float ur    = depthAtPosition(vec2(floor(samplePos.x  + simplify.x),floor(samplePos.y - simplify.y)) + halfvec );
-//
-//    //cull invalid verts
+
+    //cull invalid verts
     positionValid = (depth < farClip &&
 					 right < farClip &&
 					 down < farClip &&
@@ -97,11 +97,18 @@ void main(void)
 	vec4 pos = vec4((samplePos.x - principalPoint.x) * depth / fov.x,
                     (samplePos.y - principalPoint.y) * depth / fov.y, depth, 1.0);
 	
+	//head position
+	float headDepth = depthAtPosition(floor(headPosition) + halfvec);
+	vec3 headPos3d = vec3((headPosition.x - principalPoint.x) * headDepth / fov.x,
+						  (headPosition.y - principalPoint.y) * headDepth / fov.y, depth);
+	
+
+	headDistance = distance(pos.xyz,headPos3d);
 	
     //projective texture on the geometry
 	//http://opencv.willowgarage.com/documentation/camera_calibration_and_3d_reconstruction.html
 	vec4 texCd;
-	vec4 projection = extrinsics * pos;// + vec4(shift*dim / textureScale,0,0);
+	vec4 projection = extrinsics * pos;
 	
 	if(projection.z != 0.0) {
 		
@@ -115,6 +122,7 @@ void main(void)
 		vec2 uv = (colorFOV * xypp + colorPP) * textureScale;
 		texCd.xy = ((uv-dim/2.0) * scale) + dim/2.0;
 	}
+
 	
 	gl_TexCoord[0] = texCd;
     gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * pos;

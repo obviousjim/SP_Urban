@@ -109,6 +109,9 @@ void testApp::setup(){
 	//attemping to load the last scene
 //    loadDefaultScene();
 	
+
+	loadHeadPositions();
+
 	generateGeometry();
 }
 
@@ -200,6 +203,14 @@ void testApp::update(){
 	}
 }
 
+void testApp::saveHeadPositions(){
+//	map<string, ofVec2f>
+//	headPositions
+}
+
+void testApp::loadHeadPositions(){
+	
+}
 
 void testApp::generateGeometry(){
 	
@@ -316,7 +327,9 @@ void testApp::draw(){
 			renderer.getShader().setUniform1f("flowPosition", flowSpeed * ofGetElapsedTimef());
 			renderer.getShader().setUniform1f("brightness", screens[i]->brightness);
 			renderer.getShader().setUniform1f("contrast", screens[i]->contrast);
-			
+			renderer.getShader().setUniform2f("headPosition",
+											  headPositions[player.getScene().name].x,
+											  headPositions[player.getScene().name].y);
 			mesh.draw();
 			renderer.unbindRenderer();
 			screens[i]->getCameraRef().end();
@@ -349,9 +362,11 @@ void testApp::draw(){
 	
 
 	renderer.getDepthTexture().draw(depthRect);
-	for(int i = 0; i < screens.size(); i++){
-//		screens[i]->controls.draw();
-	}
+	ofPushStyle();
+	ofSetColor(255, 100, 5, 150);
+	ofNoFill();
+	ofCircle( headPositions[player.getScene().name] * .25 + depthRect.getMin(), 7);
+	ofPopStyle();
     gui.draw();
 }
 
@@ -384,6 +399,7 @@ void testApp::exit(){
 	for(int i = 0; i < screens.size(); i++){
 		screens[i]->saveSettings();
 	}
+	saveHeadPositions();
     gui.saveToFile("defaultSettings.xml");
 }
 
@@ -403,12 +419,17 @@ void testApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
+	ofVec2f m(x,y);
 	highlightScreen = NULL;
 	for(int i = 0; i < screens.size(); i++){
-		if(screens[i]->rect.inside(x, y)){
+		if(screens[i]->rect.inside(m)){
 			highlightScreen = screens[i];
 			break;
 		}
+	}
+
+	if(depthRect.inside(m)){
+		headPositions[player.getScene().name] = (m - depthRect.getMin()) * 4;
 	}
 
 }

@@ -69,6 +69,10 @@ class testApp : public ofBaseApp{
     bool loadDefaultScene();
     bool loadScene(string takeDirectory);
 
+	void saveHeadPositions();
+	void loadHeadPositions();
+	map<string, ofVec2f> headPositions;
+	
 	vector<PortraitScreen*> screens;
 	PortraitScreen* highlightScreen;
 	PortraitScreen led1;

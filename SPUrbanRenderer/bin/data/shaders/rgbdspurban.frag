@@ -4,7 +4,10 @@
 uniform sampler2DRect colorTex;
 uniform float brightness;
 uniform float contrast;
+
 varying float positionValid;
+varying float headDistance;
+
 const float epsilon = 1e-6;
 
 void main()
@@ -21,5 +24,7 @@ void main()
 	// Apply brightness.
 	col.rgb += brightness;
 		
-	gl_FragColor = col;
+
+	gl_FragColor = col * vec4(max(1. - (headDistance/200.0), 0.));
+	gl_FragColor.a = 1.0;
 }

@@ -7,18 +7,18 @@
 <tests/>
 <scanlines>0</scanlines>
 <debug>0</debug>
-<zclip>1032.5</zclip>
+<zclip>1107.5</zclip>
 <xrotate>-0.0799999</xrotate>
 	<yrotate>-1.4</yrotate>
 <time_per_portrait>35</time_per_portrait>
-<LED1_bri>0.3</LED1_bri>
-	<LED1_con>1.605</LED1_con>
-	<LED2_bri>0.32</LED2_bri>
-	<LED2_con>1.515</LED2_con>
+<LED1_bri>0.12</LED1_bri>
+	<LED1_con>1.695</LED1_con>
+	<LED2_bri>0.65</LED2_bri>
+	<LED2_con>1.8</LED2_con>
 	<LEFT_FACADE_bri>1.03</LEFT_FACADE_bri>
 	<LEFT_FACADE_con>1.6375</LEFT_FACADE_con>
-	<CENTER_FACADE_bri>0.32</CENTER_FACADE_bri>
-	<CENTER_FACADE_con>0.6</CENTER_FACADE_con>
+	<CENTER_FACADE_bri>0.17</CENTER_FACADE_bri>
+	<CENTER_FACADE_con>1.77</CENTER_FACADE_con>
 	<RIGHT_FACADE_bri>0.37</RIGHT_FACADE_bri>
 	<RIGHT_FACADE_con>1.365</RIGHT_FACADE_con>
 <flow>38</flow>
