@@ -1,5 +1,5 @@
 <tests>
-	<xshift>-0.0405</xshift>
+	<xshift>-0.039</xshift>
 	<yshift>-0.0405</yshift>
 	<xsimplify>3.555</xsimplify>
 	<ysimplify>3.45</ysimplify>
@@ -8,4 +8,6 @@
 <scanlines>0</scanlines>
 <debug>0</debug>
 <zclip>1085</zclip>
+<xrotate>-0.0045</xrotate>
+	<yrotate>-2.04</yrotate>
 </tests>

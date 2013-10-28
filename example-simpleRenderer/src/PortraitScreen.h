@@ -9,10 +9,18 @@ class PortraitScreen {
 	
 	PortraitScreen();
 	
+	PortraitScreen* pair;
+	
+	void drawDebug();
+	
 	string name;
+	string currentPortrait;
 	ofRectangle rect;
 	ofImage mask;
-	vector<ofNode> cameraPositions;
+	int currentCameraSample;
+	
+	//portrait name -> camera list
+	map<string, vector<ofNode> > cameraPositions;
 	ofxGameCamera cam;
 	//ofEasyCam cam;
 	bool automode;
@@ -25,5 +33,15 @@ class PortraitScreen {
 	void load();
 	
 	void sampleCamera();
+	void nextPose();
+	void deleteCurrentPose();
+	
+	void updateCameraPose();
+	
+	float nextChangeTime;
+
+	//set externally
+	float minChangeTime;
+	float changeTimeVariance;
 	
 };

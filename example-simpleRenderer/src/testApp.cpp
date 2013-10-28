@@ -22,13 +22,13 @@ void testApp::setup(){
     
 	xsimplify = 1;
     ysimplify = 1;
-    xshift = 0;
-    yshift = 0;
+    xrotate = 0;
+    yrotate = 0;
     
     gui.setup("tests");
     
-	gui.add(xshift.setup("xshift", ofParameter<float>(), -.15, .15));
-    gui.add(yshift.setup("yshift", ofParameter<float>(), -.15, .15));
+	gui.add(xrotate.setup("xrotate", ofParameter<float>(), -4., 4.));
+    gui.add(yrotate.setup("yrotate", ofParameter<float>(), -4., 4.));
 //    gui.add(xsimplify.setup("xsimplify", ofParameter<float>(), 1, 8));
 //    gui.add(ysimplify.setup("ysimplify", ofParameter<float>(), 1, 8));
 //	gui.add(scanLines.setup("scanlines", ofParameter<bool>()));
@@ -78,9 +78,6 @@ void testApp::setup(){
 	screens.push_back(&leftFacade);
 	screens.push_back(&centerFacade);
 	screens.push_back(&rightFacade);
-
-	
-
 
 
 //	if(leftmask.getWidth() != leftFacade.getWidth() || leftmask.getHeight() != leftFacade.getHeight()){
@@ -134,7 +131,7 @@ bool testApp::loadScene(string takeDirectory){
         //populate
         player.getVideoPlayer()->setPosition(.5);
         player.update();
-        
+		
 		renderer.setRGBTexture(*player.getVideoPlayer());
 		renderer.setDepthImage(player.getDepthPixels());
         
@@ -145,12 +142,14 @@ bool testApp::loadScene(string takeDirectory){
 
 //--------------------------------------------------------------
 void testApp::update(){
+	
     if(loadNew){
         loadNewScene();
     }
     
     //copy any GUI changes into the mesh
-    renderer.setXYShift(ofVec2f(xshift,yshift));
+    renderer.colorMatrixRotate.x = xrotate;
+	renderer.colorMatrixRotate.y = yrotate;
 	renderer.farClip = zclip;
 
     //update the mesh if there is a new depth frame in the player
@@ -160,6 +159,8 @@ void testApp::update(){
     }
 
 	for(int i = 0; i < screens.size(); i++){
+		screens[i]->currentPortrait = player.getScene().name;
+		screens[i]->update();
 		if(screens[i] == highlightScreen){
 			screens[i]->cam.applyRotation = screens[i]->cam.applyTranslation = true;
 		}
@@ -237,14 +238,6 @@ void testApp::generateGeometry(){
 
 	renderer.setSimplification( ofVec2f(vertStep,vertStep) );
 	
-////	float step = simp.x;
-//	for(int y = 0; y < 480; y += renderer.getSimplification().y){
-//		for(int x = 0; x < 640; x+= meshWidth + meshGapX){
-//			for(int m = x; m < x + meshWidth; x++){
-//
-//			}
-//		}
-//	}
 }
 
 //--------------------------------------------------------------
@@ -278,26 +271,21 @@ void testApp::draw(){
 			if(screens[i]->mask.isAllocated()){
 				screens[i]->mask.draw(screens[i]->rect);
 			}
+			
+			screens[i]->drawDebug();
 		}
 
-		if(debug){
-			ofPushStyle();
-			ofEnableAlphaBlending();
-			ofSetColor(255,0,0,150);
-//			ofRect(leftFacade);
-//			ofRect(centerFacade);
-//			ofRect(rightFacade);
-			
-			ofSetColor(255);
-			
-			if(highlightScreen != NULL){
-				ofNoFill();
-				ofSetColor(255, 100, 0);
-				ofRect(highlightScreen->rect);
-			}
-			
-			ofPopStyle();
+		ofPushStyle();
+		ofEnableAlphaBlending();
+		
+		if(highlightScreen != NULL){
+			ofNoFill();
+			ofSetColor(255, 100, 0);
+			ofRect(highlightScreen->rect);
 		}
+		
+		ofPopStyle();
+		
 		
     }
 
@@ -314,6 +302,17 @@ void testApp::keyPressed(int key){
 	if(key == 'R'){
 		renderer.reloadShader();
 	}
+	
+	if(key == 'C' && highlightScreen != NULL){
+		highlightScreen->automode = !highlightScreen->automode;
+	}
+	
+	if(key == 'P' && highlightScreen != NULL){
+		highlightScreen->sampleCamera();
+	}
+	if(key == 'D' && highlightScreen != NULL){
+		highlightScreen->deleteCurrentPose();
+	}
 }
 
 //--------------------------------------------------------------
@@ -328,6 +327,15 @@ void testApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y){
+}
+
+//--------------------------------------------------------------
+void testApp::mouseDragged(int x, int y, int button){
+	
+}
+
+//--------------------------------------------------------------
+void testApp::mousePressed(int x, int y, int button){
 	highlightScreen = NULL;
 	for(int i = 0; i < screens.size(); i++){
 		if(screens[i]->rect.inside(x, y)){
@@ -335,15 +343,6 @@ void testApp::mouseMoved(int x, int y){
 			break;
 		}
 	}
-}
-
-//--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void testApp::mousePressed(int x, int y, int button){
 
 }
 

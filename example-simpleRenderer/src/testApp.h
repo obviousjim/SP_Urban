@@ -54,8 +54,8 @@ class testApp : public ofBaseApp{
 
 
     ofxPanel gui;
-    ofxFloatSlider xshift;
-    ofxFloatSlider yshift;
+    ofxFloatSlider xrotate;
+    ofxFloatSlider yrotate;
     ofxFloatSlider xsimplify;
     ofxFloatSlider ysimplify;
 	ofxToggle scanLines;
