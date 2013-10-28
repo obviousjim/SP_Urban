@@ -32,12 +32,7 @@ void PortraitScreen::setup(){
 	cam.loadCameraPosition();
 
 	load();
-//	controls.setup(name + " controls");
-//	controls.add( brightness.setup("brigthness", ofParameter<float>(), .5, 3.0) );
-//	controls.add( contrast.setup("contrast", ofParameter<float>(), .5, 3.0) );
-//	controls.add( automode.setup("automode", ofParameter<bool>()) );
 	
-//	controls.loadFromFile("settings_" + name + ".xml");
 	
 }
 
@@ -100,12 +95,12 @@ void PortraitScreen::load(){
 	int numPortraits = cameraSave.getNumTags("portrait");
 	
 	for(int p = 0; p < numPortraits; p++){
-		string name = cameraSave.getAttribute("portrait", "name", "", p);
-		if(name == "") continue;
+		string portraitName = cameraSave.getAttribute("portrait", "name", "", p);
+		if(portraitName == "") continue;
 		
 		cameraSave.pushTag("portrait", p);
 		int numPoses = cameraSave.getNumTags("pose");
-		cout << "LOADING " << numPoses << " poses for " << name << endl;
+		cout << name << " LOADED " << numPoses << " poses for " << portraitName << endl;
 		for(int pose = 0; pose < numPoses; pose++){
 			cameraSave.pushTag("pose",pose);
 
@@ -119,21 +114,18 @@ void PortraitScreen::load(){
 			
 
 			cameraSave.pushTag("rotation");
-
 			n.setOrientation(ofQuaternion(
 				cameraSave.getValue("X", 0.),
 				cameraSave.getValue("Y", 0.),
 				cameraSave.getValue("Z", 0.),
 				cameraSave.getValue("W", 1.)));
-			
 			cameraSave.popTag();//rotation
 			
-			cameraPositions[name].push_back(n);
+			cameraPositions[portraitName].push_back(n);
 
 			cameraSave.popTag(); //pose;
 		}
 		cameraSave.popTag();//portait;
-		p++;
 	}
 }
 
@@ -142,7 +134,7 @@ void PortraitScreen::saveSettings(){
 }
 
 void PortraitScreen::sampleCamera(){
-	if(currentPortrait == ""){
+	if(currentPortrait == "" || automode){
 		return;
 	}
 	
@@ -155,7 +147,7 @@ void PortraitScreen::sampleCamera(){
 }
 
 void PortraitScreen::deleteCurrentPose(){
-	if(currentCameraSample >= 0 && currentCameraSample < cameraPositions[currentPortrait].size()){
+	if(currentCameraSample >= 0 && currentCameraSample < cameraPositions[currentPortrait].size() && automode){
 		cameraPositions[currentPortrait].erase(cameraPositions[currentPortrait].begin() + currentCameraSample);
 		nextChangeTime = ofGetElapsedTimef();
 		save();

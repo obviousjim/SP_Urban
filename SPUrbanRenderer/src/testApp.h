@@ -55,6 +55,7 @@ class testApp : public ofBaseApp{
 	void switchPortrait();
 	float nextPortraitTime;
 	
+	ofRectangle depthRect;
 	
     ofxPanel gui;
     ofxFloatSlider xrotate;

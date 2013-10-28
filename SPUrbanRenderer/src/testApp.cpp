@@ -70,7 +70,7 @@ void testApp::setup(){
     gui.add(yrotate.setup("yrotate", ofParameter<float>(), -4., 4.));
 	gui.add(zclip.setup("zclip",ofParameter<float>(), 500, 2000));
 	gui.add(timePerPortrait.setup("time per portrait", ofParameter<float>(), 10, 60));
-	gui.add(flowSpeed.setup("flow", ofParameter<float>(), 0, 100));
+	gui.add(flowSpeed.setup("flow", ofParameter<float>(), 0, 200));
 
 	for(int i = 0; i < screens.size(); i++){
 		gui.add( screens[i]->brightness.setup(screens[i]->name + " bri",ofParameter<float>(), 0, 2) );
@@ -89,6 +89,8 @@ void testApp::setup(){
 		paths.push_back(pathxml.getValue("path", "", i));
 	}
 	pathxml.popTag();
+	
+	depthRect = ofRectangle(10 ,10,160,120);
 	
 //	if(leftmask.getWidth() != leftFacade.getWidth() || leftmask.getHeight() != leftFacade.getHeight()){
 //		ofLogError("setup") << "left mask dimensions do not match!" << leftmask.getWidth() << " " << leftFacade.getWidth() << " " << leftmask.getHeight() << " " << leftFacade.getHeight();
@@ -343,9 +345,10 @@ void testApp::draw(){
 	ofDrawBitmapString("name " + player.getScene().name +
 					   "\nfps " + ofToString(ofGetFrameRate()) +
 					   "\ntime til next " + ofToString(nextPortraitTime - ofGetElapsedTimef(),2),
-					   ofGetWidth()-150, 20);
+					   led1.rect.getMaxX(), led1.rect.y);
 	
-	
+
+	renderer.getDepthTexture().draw(depthRect);
 	for(int i = 0; i < screens.size(); i++){
 //		screens[i]->controls.draw();
 	}

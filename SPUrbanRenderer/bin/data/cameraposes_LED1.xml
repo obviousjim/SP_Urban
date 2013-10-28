@@ -1,5 +1,45 @@
 <poses>
-    <portrait name=""></portrait>
+    <portrait name="ALASDAIR_CLOSE">
+        <pose>
+            <position>
+                <X>191.617340088</X>
+                <Y>106.197196960</Y>
+                <Z>425.327667236</Z>
+            </position>
+            <rotation>
+                <X>-0.010218360</X>
+                <Y>0.927971423</Y>
+                <Z>0.025515117</Z>
+                <W>0.371636331</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>131.428604126</X>
+                <Y>98.083686829</Y>
+                <Z>500.650421143</Z>
+            </position>
+            <rotation>
+                <X>0.000396436</X>
+                <Y>0.953056693</Y>
+                <Z>-0.001247819</Z>
+                <W>0.302789301</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>-37.461849213</X>
+                <Y>96.982810974</Y>
+                <Z>520.373229980</Z>
+            </position>
+            <rotation>
+                <X>-0.008698473</X>
+                <Y>0.948243499</Y>
+                <Z>-0.026073042</Z>
+                <W>-0.316352487</W>
+            </rotation>
+        </pose>
+    </portrait>
     <portrait name="ALICE_CLOSE">
         <pose>
             <position>
@@ -40,33 +80,74 @@
                 <W>-0.549363256</W>
             </rotation>
         </pose>
-    </portrait>
-    <portrait name="JEN_CLOSE">
         <pose>
             <position>
-                <X>24.023719788</X>
-                <Y>91.780838013</Y>
-                <Z>525.770812988</Z>
+                <X>269.000000000</X>
+                <Y>107.000000000</Y>
+                <Z>580.000000000</Z>
             </position>
             <rotation>
-                <X>0.005676800</X>
-                <Y>0.975867093</Y>
-                <Z>0.025553700</Z>
-                <W>-0.216790661</W>
+                <X>-0.041974306</X>
+                <Y>0.830519497</Y>
+                <Z>0.063175812</Z>
+                <W>0.551801026</W>
             </rotation>
         </pose>
         <pose>
             <position>
-                <X>-303.938964844</X>
-                <Y>103.292861938</Y>
-                <Z>424.044006348</Z>
+                <X>269.000000000</X>
+                <Y>107.000000000</Y>
+                <Z>580.000000000</Z>
             </position>
             <rotation>
-                <X>0.042064130</X>
-                <Y>0.890575588</Y>
-                <Z>0.084183969</Z>
-                <W>-0.444993138</W>
+                <X>-0.041974306</X>
+                <Y>0.830519497</Y>
+                <Z>0.063175812</Z>
+                <W>0.551801026</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>269.000000000</X>
+                <Y>107.000000000</Y>
+                <Z>580.000000000</Z>
+            </position>
+            <rotation>
+                <X>-0.041974306</X>
+                <Y>0.830519497</Y>
+                <Z>0.063175812</Z>
+                <W>0.551801026</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>269.000000000</X>
+                <Y>107.000000000</Y>
+                <Z>580.000000000</Z>
+            </position>
+            <rotation>
+                <X>-0.041974306</X>
+                <Y>0.830519497</Y>
+                <Z>0.063175812</Z>
+                <W>0.551801026</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>269.000000000</X>
+                <Y>107.000000000</Y>
+                <Z>580.000000000</Z>
+            </position>
+            <rotation>
+                <X>-0.041974306</X>
+                <Y>0.830519497</Y>
+                <Z>0.063175812</Z>
+                <W>0.551801026</W>
             </rotation>
         </pose>
     </portrait>
+    <portrait name="JEN_CLOSE"></portrait>
+    <portrait name="KEV_CLOSE"></portrait>
+    <portrait name="LISA_CLOSE"></portrait>
+    <portrait name="MARK_CLOSE"></portrait>
 </poses>
