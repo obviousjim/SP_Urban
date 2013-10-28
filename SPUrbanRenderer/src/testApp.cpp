@@ -22,64 +22,40 @@ void testApp::setup(){
 	
     //set up the game camera
     
-	xsimplify = 1;
-    ysimplify = 1;
     xrotate = 0;
     yrotate = 0;
     
-    gui.setup("tests");
-    
-	gui.add(xrotate.setup("xrotate", ofParameter<float>(), -4., 4.));
-    gui.add(yrotate.setup("yrotate", ofParameter<float>(), -4., 4.));
-	gui.add(zclip.setup("zclip",ofParameter<float>(), 500, 2000));
-	gui.add(timePerPortrait.setup("time per portrait", ofParameter<float>(), 10, 60));
-    gui.add(loadNew.setup("load new"));
 
-        
-    gui.loadFromFile("defaultSettings.xml");
-    
-    if(xsimplify < 1){
-        xsimplify = 1;
-    }
-    if(ysimplify < 1){
-        ysimplify = 1;
-    }
-    
 	renderer.setShaderPath("shaders/rgbdspurban");
 	
 
 	led1.name = "LED1";
 	led1.rect = ofRectangle(280, 10, 760-280,298-10);
 	led1.debugLocation.x = led1.rect.getMaxX();
-	led1.debugLocation.y = led1.rect.getY();
-	led1.setup();
+	led1.debugLocation.y = led1.rect.getMaxY()-70;
 	
 	led2.name = "LED2";
 	led2.rect = ofRectangle(280, 310, 760-280,598-310);
 	led2.debugLocation.x = led2.rect.getMaxX();
 	led2.debugLocation.y = led2.rect.getY();
-	led2.setup();
 	
 	leftFacade.name = "LEFT_FACADE";
 	leftFacade.rect = ofRectangle(36, 258,98-36,426-258);
 	leftFacade.mask.loadImage("facade/leftfacade.png");
 	leftFacade.debugLocation.x = leftFacade.rect.getX()-30;
-	leftFacade.debugLocation.y = leftFacade.rect.getMaxY()+10;
-	leftFacade.setup();
+	leftFacade.debugLocation.y = leftFacade.rect.getMaxY()+15;
 	
 	centerFacade.name = "CENTER_FACADE";
 	centerFacade.rect = ofRectangle(98, 258,192-98,426-258);
 	centerFacade.mask.loadImage("facade/centerfacade.png");
 	centerFacade.debugLocation.x = centerFacade.rect.getX();
-	centerFacade.debugLocation.y = centerFacade.rect.getY()-50;
-	centerFacade.setup();
+	centerFacade.debugLocation.y = centerFacade.rect.getY()-60;
 	
 	rightFacade.name = "RIGHT_FACADE";
 	rightFacade.rect = ofRectangle(192, 258,251-192,426-258);
 	rightFacade.mask.loadImage("facade/rightfacade.png");
-	rightFacade.debugLocation.x = rightFacade.rect.getX()-45;
-	rightFacade.debugLocation.y = rightFacade.rect.getMaxY()+10;
-	rightFacade.setup();
+	rightFacade.debugLocation.x = rightFacade.rect.getX()-50;
+	rightFacade.debugLocation.y = rightFacade.rect.getMaxY()+15;
 
 	
 	screens.push_back(&led1);
@@ -88,6 +64,23 @@ void testApp::setup(){
 	screens.push_back(&centerFacade);
 	screens.push_back(&rightFacade);
 
+	gui.setup("tests");
+    
+	gui.add(xrotate.setup("xrotate", ofParameter<float>(), -4., 4.));
+    gui.add(yrotate.setup("yrotate", ofParameter<float>(), -4., 4.));
+	gui.add(zclip.setup("zclip",ofParameter<float>(), 500, 2000));
+	gui.add(timePerPortrait.setup("time per portrait", ofParameter<float>(), 10, 60));
+	gui.add(flowSpeed.setup("flow", ofParameter<float>(), 0, 100));
+
+	for(int i = 0; i < screens.size(); i++){
+		gui.add( screens[i]->brightness.setup(screens[i]->name + " bri",ofParameter<float>(), 0, 2) );
+		gui.add( screens[i]->contrast.setup(screens[i]->name + " con",ofParameter<float>(), 0, 3) );
+		screens[i]->setup();
+	}
+	
+	gui.loadFromFile("defaultSettings.xml");
+	gui.setPosition(ofPoint(led2.rect.getMaxX() + 10, led2.rect.getMinY() + 75));
+					
 	ofxXmlSettings pathxml;
 	pathxml.load("paths.xml");
 	pathxml.pushTag("paths");
@@ -162,10 +155,10 @@ bool testApp::loadScene(string takeDirectory){
 //--------------------------------------------------------------
 void testApp::update(){
 	
-    if(loadNew){
-        loadNewScene();
-    }
-    
+//    if(loadNew){
+//        loadNewScene();
+//    }
+//    
     //copy any GUI changes into the mesh
     renderer.colorMatrixRotate.x = xrotate;
 	renderer.colorMatrixRotate.y = yrotate;
@@ -178,12 +171,12 @@ void testApp::update(){
     }
 	
 	if(ofGetElapsedTimef() > nextPortraitTime){
-		bool allAutoMode = true;
+		bool hasComposeMode = false;
 		for(int i = 0; i < screens.size(); i++){
-			allAutoMode &= screens[i]->automode;
+			hasComposeMode |= !screens[i]->automode;
 		}
 		
-		if(!allAutoMode){
+		if(!hasComposeMode){
 			gotoNextPortrait();
 			
 			nextPortraitTime = ofGetElapsedTimef() + timePerPortrait;
@@ -256,13 +249,13 @@ void testApp::generateGeometry(){
 					
 					//TODO: colors!!!
 //					ofFloatColor color(ofRandomuf(),ofRandomuf(),ofRandomuf());
-					mesh.addColor(col);
-					mesh.addColor(col);
-					mesh.addColor(col);
-					
-					mesh.addColor(col);
-					mesh.addColor(col);
-					mesh.addColor(col);
+//					mesh.addColor(col);
+//					mesh.addColor(col);
+//					mesh.addColor(col);
+//					
+//					mesh.addColor(col);
+//					mesh.addColor(col);
+//					mesh.addColor(col);
 				}
 				
 				skipping = ofRandomuf() > .95;				
@@ -313,16 +306,20 @@ void testApp::draw(){
 		//PORTRAIT
 		ofEnableBlendMode(OF_BLENDMODE_SCREEN);
 		ofSetColor(ofColor::white);
-//        glEnable(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_TEST);
 		for(int i = 0; i < screens.size(); i++){
 			screens[i]->getCameraRef().begin(screens[i]->rect);
 			renderer.bindRenderer();
-			renderer.getShader().setUniform1f("flowPosition", ofGetFrameNum());
+			
+			renderer.getShader().setUniform1f("flowPosition", flowSpeed * ofGetElapsedTimef());
+			renderer.getShader().setUniform1f("brightness", screens[i]->brightness);
+			renderer.getShader().setUniform1f("contrast", screens[i]->contrast);
+			
 			mesh.draw();
 			renderer.unbindRenderer();
 			screens[i]->getCameraRef().end();
 		}
-//		glDisable(GL_DEPTH_TEST);
+
 
 		//MASK
 		ofEnableAlphaBlending();
@@ -343,8 +340,15 @@ void testApp::draw(){
 		ofPopStyle();
     }
 
-	ofDrawBitmapString( ofToString(ofGetFrameRate()), ofGetWidth()-100, 20);
+	ofDrawBitmapString("name " + player.getScene().name +
+					   "\nfps " + ofToString(ofGetFrameRate()) +
+					   "\ntime til next " + ofToString(nextPortraitTime - ofGetElapsedTimef(),2),
+					   ofGetWidth()-150, 20);
 	
+	
+	for(int i = 0; i < screens.size(); i++){
+//		screens[i]->controls.draw();
+	}
     gui.draw();
 }
 
@@ -374,6 +378,9 @@ void testApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void testApp::exit(){
+	for(int i = 0; i < screens.size(); i++){
+		screens[i]->saveSettings();
+	}
     gui.saveToFile("defaultSettings.xml");
 }
 

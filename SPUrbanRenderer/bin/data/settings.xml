@@ -1,0 +1,21 @@
+<LED2_controls>
+	<brigthness>1.0842e-19</brigthness>
+	<contrast>1.0842e-19</contrast>
+	<automode>0</automode>
+<LED1_controls>
+		<brigthness>1.725</brigthness>
+		<contrast>1.6375</contrast>
+		<automode>0</automode>
+	</LED1_controls>
+<LEFT_FACADE_controls>
+		<brigthness>1.7</brigthness>
+		<contrast>1.7</contrast>
+		<automode>0</automode>
+	</LEFT_FACADE_controls>
+<tests>
+		<xrotate>-0.0045</xrotate>
+		<yrotate>-2.04</yrotate>
+		<zclip>905</zclip>
+		<time_per_portrait>35</time_per_portrait>
+	</tests>
+</LED2_controls>

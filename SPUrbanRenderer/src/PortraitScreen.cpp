@@ -32,6 +32,13 @@ void PortraitScreen::setup(){
 	cam.loadCameraPosition();
 
 	load();
+//	controls.setup(name + " controls");
+//	controls.add( brightness.setup("brigthness", ofParameter<float>(), .5, 3.0) );
+//	controls.add( contrast.setup("contrast", ofParameter<float>(), .5, 3.0) );
+//	controls.add( automode.setup("automode", ofParameter<bool>()) );
+	
+//	controls.loadFromFile("settings_" + name + ".xml");
+	
 }
 
 void PortraitScreen::save(){
@@ -41,6 +48,9 @@ void PortraitScreen::save(){
 	cameraSave.pushTag("poses");
 	int p = 0;
 	for(it = cameraPositions.begin(); it != cameraPositions.end(); it++){
+		
+		if(it->first == "") continue;
+		
 		cameraSave.addTag("portrait");
 		cameraSave.addAttribute("portrait", "name", it->first, p);
 		cameraSave.pushTag("portrait", p);
@@ -76,6 +86,7 @@ void PortraitScreen::save(){
 ofCamera& PortraitScreen::getCameraRef(){
 	return automode ? normalCam : cam;
 }
+
 void PortraitScreen::load(){
 	ofxXmlSettings cameraSave;
 	string path = "cameraposes_" + name + ".xml";
@@ -90,6 +101,8 @@ void PortraitScreen::load(){
 	
 	for(int p = 0; p < numPortraits; p++){
 		string name = cameraSave.getAttribute("portrait", "name", "", p);
+		if(name == "") continue;
+		
 		cameraSave.pushTag("portrait", p);
 		int numPoses = cameraSave.getNumTags("pose");
 		cout << "LOADING " << numPoses << " poses for " << name << endl;
@@ -124,7 +137,15 @@ void PortraitScreen::load(){
 	}
 }
 
+void PortraitScreen::saveSettings(){
+//	controls.saveToFile("settings_" + name + ".xml");
+}
+
 void PortraitScreen::sampleCamera(){
+	if(currentPortrait == ""){
+		return;
+	}
+	
 	ofNode n;
 	n.setPosition(cam.getPosition());
 	n.setOrientation(cam.getOrientationQuat());
@@ -139,7 +160,6 @@ void PortraitScreen::deleteCurrentPose(){
 		nextChangeTime = ofGetElapsedTimef();
 		save();
 	}
-
 }
 
 void PortraitScreen::nextPose(){
@@ -176,9 +196,7 @@ void PortraitScreen::updateCameraPose(){
 }
 
 void PortraitScreen::draw(){
-	if(mask.isAllocated()){
-		mask.draw(rect);
-	}
+
 }
 
 void PortraitScreen::drawDebug(){

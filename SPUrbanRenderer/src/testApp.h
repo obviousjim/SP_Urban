@@ -59,10 +59,9 @@ class testApp : public ofBaseApp{
     ofxPanel gui;
     ofxFloatSlider xrotate;
     ofxFloatSlider yrotate;
-    ofxFloatSlider xsimplify;
-    ofxFloatSlider ysimplify;
 	ofxFloatSlider zclip;
 	ofxFloatSlider timePerPortrait;
+	ofxFloatSlider flowSpeed;
     ofxButton loadNew;
     
     bool loadNewScene();

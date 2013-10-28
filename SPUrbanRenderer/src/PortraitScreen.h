@@ -3,6 +3,7 @@
 
 #include "ofMain.h"
 #include "ofxGameCamera.h"
+#include "ofxGui.h"
 
 class PortraitScreen {
   public:
@@ -11,6 +12,7 @@ class PortraitScreen {
 	
 	PortraitScreen* pair;
 	
+	void saveSettings();
 	void drawDebug();
 	
 	ofVec2f debugLocation;
@@ -26,9 +28,12 @@ class PortraitScreen {
 	ofxGameCamera cam;
 	ofCamera normalCam;
 	
-	ofCamera& getCameraRef();
+	ofxFloatSlider brightness;
+	ofxFloatSlider contrast;
+
 	
-	//ofEasyCam cam;
+	ofCamera& getCameraRef();
+
 	bool automode;
 	
 	void setup();
