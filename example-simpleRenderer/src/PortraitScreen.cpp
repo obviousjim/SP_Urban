@@ -143,8 +143,10 @@ void PortraitScreen::deleteCurrentPose(){
 }
 
 void PortraitScreen::nextPose(){
-	currentCameraSample = (currentCameraSample + 1) % cameraPositions[currentPortrait].size();
-	updateCameraPose();
+	if(cameraPositions[currentPortrait].size() > 0){
+		currentCameraSample = (currentCameraSample + 1) % cameraPositions[currentPortrait].size();
+		updateCameraPose();
+	}
 }
 
 void PortraitScreen::update(){
@@ -187,5 +189,5 @@ void PortraitScreen::drawDebug(){
 			currentCameraSample,
 			cameraPositions[currentPortrait].size());
 	
-	ofDrawBitmapString(debug, rect.getMaxX(), rect.getMinY());
+	ofDrawBitmapString(debug, debugLocation);
 }

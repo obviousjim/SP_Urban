@@ -7,7 +7,8 @@
 <tests/>
 <scanlines>0</scanlines>
 <debug>0</debug>
-<zclip>1085</zclip>
+<zclip>905</zclip>
 <xrotate>-0.0045</xrotate>
 	<yrotate>-2.04</yrotate>
+<time_per_portrait>35</time_per_portrait>
 </tests>

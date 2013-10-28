@@ -1,0 +1,43 @@
+<poses>
+    <portrait name="ALASDAIR_CLOSE">
+        <pose>
+            <position>
+                <X>-268.422180176</X>
+                <Y>51.212909698</Y>
+                <Z>526.475524902</Z>
+            </position>
+            <rotation>
+                <X>-0.074472643</X>
+                <Y>0.858166575</Y>
+                <Z>-0.130168408</Z>
+                <W>-0.490978777</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>-57.857585907</X>
+                <Y>105.938819885</Y>
+                <Z>514.333496094</Z>
+            </position>
+            <rotation>
+                <X>-0.031836018</X>
+                <Y>0.966351748</Y>
+                <Z>-0.147872448</Z>
+                <W>-0.208049491</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>-12.078607559</X>
+                <Y>105.441497803</Y>
+                <Z>471.146545410</Z>
+            </position>
+            <rotation>
+                <X>0.003606295</X>
+                <Y>0.995221019</Y>
+                <Z>-0.040407013</Z>
+                <W>0.088822730</W>
+            </rotation>
+        </pose>
+    </portrait>
+</poses>

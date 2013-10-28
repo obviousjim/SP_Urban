@@ -17,7 +17,9 @@ void testApp::setup(){
     ofSetFrameRate(60);
     ofSetVerticalSync(true);
     ofBackground(25);
-    
+	
+    nextPortraitTime = 0;
+	
     //set up the game camera
     
 	xsimplify = 1;
@@ -29,11 +31,8 @@ void testApp::setup(){
     
 	gui.add(xrotate.setup("xrotate", ofParameter<float>(), -4., 4.));
     gui.add(yrotate.setup("yrotate", ofParameter<float>(), -4., 4.));
-//    gui.add(xsimplify.setup("xsimplify", ofParameter<float>(), 1, 8));
-//    gui.add(ysimplify.setup("ysimplify", ofParameter<float>(), 1, 8));
-//	gui.add(scanLines.setup("scanlines", ofParameter<bool>()));
-	gui.add(debug.setup("debug",ofParameter<bool>()));
 	gui.add(zclip.setup("zclip",ofParameter<float>(), 500, 2000));
+	gui.add(timePerPortrait.setup("time per portrait", ofParameter<float>(), 10, 60));
     gui.add(loadNew.setup("load new"));
 
         
@@ -48,28 +47,38 @@ void testApp::setup(){
     
 	renderer.setShaderPath("shaders/rgbdspurban");
 	
-	
+
 	led1.name = "LED1";
 	led1.rect = ofRectangle(280, 10, 760-280,298-10);
+	led1.debugLocation.x = led1.rect.getMaxX();
+	led1.debugLocation.y = led1.rect.getY();
 	led1.setup();
 	
 	led2.name = "LED2";
 	led2.rect = ofRectangle(280, 310, 760-280,598-310);
+	led2.debugLocation.x = led2.rect.getMaxX();
+	led2.debugLocation.y = led2.rect.getY();
 	led2.setup();
 	
 	leftFacade.name = "LEFT_FACADE";
 	leftFacade.rect = ofRectangle(36, 258,98-36,426-258);
 	leftFacade.mask.loadImage("facade/leftfacade.png");
+	leftFacade.debugLocation.x = leftFacade.rect.getX()-30;
+	leftFacade.debugLocation.y = leftFacade.rect.getMaxY()+10;
 	leftFacade.setup();
 	
 	centerFacade.name = "CENTER_FACADE";
 	centerFacade.rect = ofRectangle(98, 258,192-98,426-258);
 	centerFacade.mask.loadImage("facade/centerfacade.png");
+	centerFacade.debugLocation.x = centerFacade.rect.getX();
+	centerFacade.debugLocation.y = centerFacade.rect.getY()-50;
 	centerFacade.setup();
 	
 	rightFacade.name = "RIGHT_FACADE";
 	rightFacade.rect = ofRectangle(192, 258,251-192,426-258);
 	rightFacade.mask.loadImage("facade/rightfacade.png");
+	rightFacade.debugLocation.x = rightFacade.rect.getX()-45;
+	rightFacade.debugLocation.y = rightFacade.rect.getMaxY()+10;
 	rightFacade.setup();
 
 	
@@ -79,7 +88,15 @@ void testApp::setup(){
 	screens.push_back(&centerFacade);
 	screens.push_back(&rightFacade);
 
-
+	ofxXmlSettings pathxml;
+	pathxml.load("paths.xml");
+	pathxml.pushTag("paths");
+	int numpaths = pathxml.getNumTags("path");
+	for(int i = 0; i < numpaths; i++){
+		paths.push_back(pathxml.getValue("path", "", i));
+	}
+	pathxml.popTag();
+	
 //	if(leftmask.getWidth() != leftFacade.getWidth() || leftmask.getHeight() != leftFacade.getHeight()){
 //		ofLogError("setup") << "left mask dimensions do not match!" << leftmask.getWidth() << " " << leftFacade.getWidth() << " " << leftmask.getHeight() << " " << leftFacade.getHeight();
 //	}
@@ -92,8 +109,10 @@ void testApp::setup(){
 
 	highlightScreen = NULL;
 	
+	currentPortraitIndex = 0;
+	switchPortrait();
 	//attemping to load the last scene
-    loadDefaultScene();
+//    loadDefaultScene();
 	
 	generateGeometry();
 }
@@ -157,6 +176,22 @@ void testApp::update(){
     if(player.isFrameNew()){
         renderer.update();
     }
+	
+	if(ofGetElapsedTimef() > nextPortraitTime){
+		bool allAutoMode = true;
+		for(int i = 0; i < screens.size(); i++){
+			allAutoMode &= screens[i]->automode;
+		}
+		
+		if(!allAutoMode){
+			gotoNextPortrait();
+			
+			nextPortraitTime = ofGetElapsedTimef() + timePerPortrait;
+			for(int i = 0; i < screens.size(); i++){
+				screens[i]->nextPose();
+			}
+		}
+	}
 
 	for(int i = 0; i < screens.size(); i++){
 		screens[i]->currentPortrait = player.getScene().name;
@@ -177,9 +212,8 @@ void testApp::generateGeometry(){
 
 	int columns = 40;
 	int vertsPerColumn = 3;
-	float colStep = 640. / columns ;
+	float colStep = 640. / columns;
 	float vertStep = colStep / (vertsPerColumn+1);
-
 	bool skipping = false;
 	
 	cout << "creating mesh with colstep " << colStep << " and vert step " << vertStep << endl;
@@ -241,6 +275,31 @@ void testApp::generateGeometry(){
 }
 
 //--------------------------------------------------------------
+void testApp::gotoNextPortrait(){
+	currentPortraitIndex = (currentPortraitIndex + 1) % paths.size();
+	switchPortrait();	
+}
+
+//--------------------------------------------------------------
+void testApp::gotoPreviousPortrait(){
+	currentPortraitIndex = (paths.size() + currentPortraitIndex - 1) % paths.size();
+	switchPortrait();
+}
+
+//--------------------------------------------------------------
+void testApp::switchPortrait(){
+	if(!loadScene( paths[currentPortraitIndex] )){
+		ofLogError("testApp::switchPortrait") << "Failed to load portrait " << paths[currentPortraitIndex];
+		return;
+	}
+	
+	player.getVideoPlayer()->play();
+	player.getVideoPlayer()->setSpeed(.5);
+	player.getVideoPlayer()->setVolume(0.);
+	
+}
+
+//--------------------------------------------------------------
 void testApp::draw(){
     if(player.isLoaded()){
         
@@ -254,7 +313,7 @@ void testApp::draw(){
 		//PORTRAIT
 		ofEnableBlendMode(OF_BLENDMODE_SCREEN);
 		ofSetColor(ofColor::white);
-        glEnable(GL_DEPTH_TEST);
+//        glEnable(GL_DEPTH_TEST);
 		for(int i = 0; i < screens.size(); i++){
 			screens[i]->getCameraRef().begin(screens[i]->rect);
 			renderer.bindRenderer();
@@ -263,7 +322,7 @@ void testApp::draw(){
 			renderer.unbindRenderer();
 			screens[i]->getCameraRef().end();
 		}
-		glDisable(GL_DEPTH_TEST);
+//		glDisable(GL_DEPTH_TEST);
 
 		//MASK
 		ofEnableAlphaBlending();
@@ -271,22 +330,17 @@ void testApp::draw(){
 			if(screens[i]->mask.isAllocated()){
 				screens[i]->mask.draw(screens[i]->rect);
 			}
-			
 			screens[i]->drawDebug();
 		}
 
 		ofPushStyle();
 		ofEnableAlphaBlending();
-		
 		if(highlightScreen != NULL){
 			ofNoFill();
 			ofSetColor(255, 100, 0);
 			ofRect(highlightScreen->rect);
 		}
-		
 		ofPopStyle();
-		
-		
     }
 
 	ofDrawBitmapString( ofToString(ofGetFrameRate()), ofGetWidth()-100, 20);
@@ -296,6 +350,7 @@ void testApp::draw(){
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
+	
     if(key == ' '){
         player.togglePlay();
     }
@@ -365,8 +420,8 @@ void testApp::gotMessage(ofMessage msg){
 
 //--------------------------------------------------------------
 void testApp::dragEvent(ofDragInfo dragInfo){
-	ofDirectory dir(dragInfo.files[0]);
-	if( dir.isDirectory() && ofxRGBDScene::isFolderValid(dragInfo.files[0]) ){
-		loadScene(dragInfo.files[0]);
-	}
+//	ofDirectory dir(dragInfo.files[0]);
+//	if( dir.isDirectory() && ofxRGBDScene::isFolderValid(dragInfo.files[0]) ){
+//		loadScene(dragInfo.files[0]);
+//	}
 }

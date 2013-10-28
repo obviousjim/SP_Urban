@@ -46,22 +46,23 @@ class testApp : public ofBaseApp{
 	void generateGeometry();
 	
     ofxRGBDPlayer player;
-    //either one of these will work,
-    //you can see the performance difference
     ofxRGBDGPURenderer renderer;
-    //ofxRGBDCPURenderer renderer;
-//    ofxGameCamera cam;
-
-
+	
+	int currentPortraitIndex;
+	vector<string> paths;
+	void gotoNextPortrait();
+	void gotoPreviousPortrait();
+	void switchPortrait();
+	float nextPortraitTime;
+	
+	
     ofxPanel gui;
     ofxFloatSlider xrotate;
     ofxFloatSlider yrotate;
     ofxFloatSlider xsimplify;
     ofxFloatSlider ysimplify;
-	ofxToggle scanLines;
-	ofxToggle debug;
 	ofxFloatSlider zclip;
-	
+	ofxFloatSlider timePerPortrait;
     ofxButton loadNew;
     
     bool loadNewScene();
@@ -77,7 +78,7 @@ class testApp : public ofBaseApp{
 	PortraitScreen centerFacade;
 	PortraitScreen rightFacade;
 	
-	ofMesh scanlines;
 	ofVboMesh mesh;
+	
 	
 };

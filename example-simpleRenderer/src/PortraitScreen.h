@@ -13,6 +13,8 @@ class PortraitScreen {
 	
 	void drawDebug();
 	
+	ofVec2f debugLocation;
+	
 	string name;
 	string currentPortrait;
 	ofRectangle rect;
