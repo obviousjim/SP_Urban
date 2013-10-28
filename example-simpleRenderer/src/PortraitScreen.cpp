@@ -10,7 +10,7 @@
 #include "ofxXmlSettings.h"
 
 PortraitScreen::PortraitScreen(){
-	automode = false;
+	automode = true;
 	minChangeTime = 5;
 	changeTimeVariance = 2;
 	nextChangeTime = 0;
@@ -73,13 +73,18 @@ void PortraitScreen::save(){
 	cameraSave.save("cameraposes_" + name + ".xml");
 }
 
+ofCamera& PortraitScreen::getCameraRef(){
+	return automode ? normalCam : cam;
+}
 void PortraitScreen::load(){
 	ofxXmlSettings cameraSave;
-	if(!cameraSave.load("camerapose_" + name + ".xml")){
-		ofLogError("PortraitScreen::load") << "Couldn't load " << "camerapose_" << name << ".xml";
+	string path = "cameraposes_" + name + ".xml";
+	if(!cameraSave.load(path)){
+		ofLogError("PortraitScreen::load") << "Couldn't load " << path;
+		return;
 	}
+
 	cameraPositions.clear();
-	
 	cameraSave.pushTag("poses");
 	int numPortraits = cameraSave.getNumTags("portrait");
 	
@@ -87,10 +92,10 @@ void PortraitScreen::load(){
 		string name = cameraSave.getAttribute("portrait", "name", "", p);
 		cameraSave.pushTag("portrait", p);
 		int numPoses = cameraSave.getNumTags("pose");
-
+		cout << "LOADING " << numPoses << " poses for " << name << endl;
 		for(int pose = 0; pose < numPoses; pose++){
 			cameraSave.pushTag("pose",pose);
-			
+
 			ofNode n;
 			cameraSave.pushTag("position");
 			n.setPosition(ofVec3f(
@@ -101,14 +106,17 @@ void PortraitScreen::load(){
 			
 
 			cameraSave.pushTag("rotation");
+
 			n.setOrientation(ofQuaternion(
-				cameraSave.getValue("X", 0),
-				cameraSave.getValue("Y", 0),
-				cameraSave.getValue("Z", 0),
-				cameraSave.getValue("W", 1)));
-			cameraSave.popTag();//rotation
-			cameraPositions[name].push_back(n);
+				cameraSave.getValue("X", 0.),
+				cameraSave.getValue("Y", 0.),
+				cameraSave.getValue("Z", 0.),
+				cameraSave.getValue("W", 1.)));
 			
+			cameraSave.popTag();//rotation
+			
+			cameraPositions[name].push_back(n);
+
 			cameraSave.popTag(); //pose;
 		}
 		cameraSave.popTag();//portait;
@@ -117,16 +125,21 @@ void PortraitScreen::load(){
 }
 
 void PortraitScreen::sampleCamera(){
-	cameraPositions[currentPortrait].push_back(cam);
+	ofNode n;
+	n.setPosition(cam.getPosition());
+	n.setOrientation(cam.getOrientationQuat());
+	cameraPositions[currentPortrait].push_back(n);
 
 	save();
 }
 
 void PortraitScreen::deleteCurrentPose(){
-	if(currentCameraSample > 0 && currentCameraSample < cameraPositions[currentPortrait].size()){
+	if(currentCameraSample >= 0 && currentCameraSample < cameraPositions[currentPortrait].size()){
 		cameraPositions[currentPortrait].erase(cameraPositions[currentPortrait].begin() + currentCameraSample);
 		nextChangeTime = ofGetElapsedTimef();
+		save();
 	}
+
 }
 
 void PortraitScreen::nextPose(){
@@ -156,8 +169,8 @@ void PortraitScreen::update(){
 
 void PortraitScreen::updateCameraPose(){
 	vector<ofNode>& poses = cameraPositions[currentPortrait];	
-	cam.setPosition( poses[currentCameraSample].getPosition() );
-	cam.setOrientation( poses[currentCameraSample].getOrientationQuat() );
+	normalCam.setPosition( poses[currentCameraSample].getPosition() );
+	normalCam.setOrientation( poses[currentCameraSample].getOrientationQuat() );
 }
 
 void PortraitScreen::draw(){

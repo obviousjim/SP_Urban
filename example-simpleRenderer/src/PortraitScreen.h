@@ -22,6 +22,10 @@ class PortraitScreen {
 	//portrait name -> camera list
 	map<string, vector<ofNode> > cameraPositions;
 	ofxGameCamera cam;
+	ofCamera normalCam;
+	
+	ofCamera& getCameraRef();
+	
 	//ofEasyCam cam;
 	bool automode;
 	

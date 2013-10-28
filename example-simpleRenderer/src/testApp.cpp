@@ -256,12 +256,12 @@ void testApp::draw(){
 		ofSetColor(ofColor::white);
         glEnable(GL_DEPTH_TEST);
 		for(int i = 0; i < screens.size(); i++){
-			screens[i]->cam.begin(screens[i]->rect);
+			screens[i]->getCameraRef().begin(screens[i]->rect);
 			renderer.bindRenderer();
 			renderer.getShader().setUniform1f("flowPosition", ofGetFrameNum());
 			mesh.draw();
 			renderer.unbindRenderer();
-			screens[i]->cam.end();
+			screens[i]->getCameraRef().end();
 		}
 		glDisable(GL_DEPTH_TEST);
 
@@ -302,7 +302,6 @@ void testApp::keyPressed(int key){
 	if(key == 'R'){
 		renderer.reloadShader();
 	}
-	
 	if(key == 'C' && highlightScreen != NULL){
 		highlightScreen->automode = !highlightScreen->automode;
 	}
@@ -312,6 +311,9 @@ void testApp::keyPressed(int key){
 	}
 	if(key == 'D' && highlightScreen != NULL){
 		highlightScreen->deleteCurrentPose();
+	}
+	if(key == 'N' && highlightScreen != NULL){
+		highlightScreen->nextPose();
 	}
 }
 
