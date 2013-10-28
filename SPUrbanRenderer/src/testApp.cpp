@@ -18,6 +18,7 @@ void testApp::setup(){
     ofSetVerticalSync(true);
     ofBackground(25);
 	
+
     nextPortraitTime = 0;
 	
     //set up the game camera
@@ -116,6 +117,8 @@ void testApp::setup(){
 	loadHeadPositions();
 
 	generateGeometry();
+	ofToggleFullscreen();
+	
 }
 
 //--------------------------------------------------------------
@@ -203,12 +206,43 @@ void testApp::update(){
 }
 
 void testApp::saveHeadPositions(){
-//	map<string, ofVec2f>
-//	headPositions
+	map<string, ofVec2f>::iterator it;
+	ofxXmlSettings headPosSave;
+	headPosSave.addTag("heads");
+	headPosSave.pushTag("heads");
+	int h = 0;
+	for(it = headPositions.begin(); it != headPositions.end(); it++){
+		headPosSave.addTag("head");
+		headPosSave.addAttribute("head","name", it->first, h);
+		headPosSave.pushTag("head",h);
+		headPosSave.addValue("x", it->second.x);
+		headPosSave.addValue("y", it->second.y);
+		headPosSave.popTag();
+		h++;
+	}
+	headPosSave.popTag();//heads;
+	headPosSave.save("HeadPositions.xml");
 }
 
 void testApp::loadHeadPositions(){
-	
+	ofxXmlSettings headPosSave;
+	if(!headPosSave.load("HeadPositions.xml")){
+		ofLogError("testApp::loadHeadPositions") << "Couldn't load head positions";
+		return;
+	}
+	headPositions.clear();
+	headPosSave.pushTag("heads");
+	int numheads = headPosSave.getNumTags("head");
+	for(int i = 0; i < numheads; i++){
+		string headName = headPosSave.getAttribute("head", "name", "", i);
+		
+		if(headName == "") continue;
+		
+		headPosSave.pushTag("head",i);
+		headPositions[headName].x = headPosSave.getValue("x", 0);
+		headPositions[headName].y = headPosSave.getValue("y", 0);
+		headPosSave.popTag();//head;
+	}
 }
 
 void testApp::generateGeometry(){
@@ -251,6 +285,8 @@ void testApp::generateGeometry(){
 					ofVec3f c = ofVec3f(x+vertStep,y+vertStep,0);
 					ofVec3f d = ofVec3f(x,y+vertStep,0);
 					
+					ofVec3f center = (a+b+c+d)*.25;
+					
 					mesh.addVertex(a);
 					mesh.addVertex(b);
 					mesh.addVertex(d);
@@ -266,6 +302,15 @@ void testApp::generateGeometry(){
 					mesh.addColor(col);
 					mesh.addColor(col);
 					mesh.addColor(col);
+					
+					mesh.addNormal(a-center);
+					mesh.addNormal(b-center);
+					mesh.addNormal(d-center);
+					
+					mesh.addNormal(b-center);
+					mesh.addNormal(c-center);
+					mesh.addNormal(d-center);
+
 				}
 				
 				skipping = ofRandomuf() > .95;				
@@ -274,7 +319,6 @@ void testApp::generateGeometry(){
 	}
 
 	renderer.setSimplification( ofVec2f(vertStep,vertStep) );
-	
 }
 
 //--------------------------------------------------------------

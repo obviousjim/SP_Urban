@@ -57,7 +57,8 @@ void main(void)
     //align to texture
     vec2 halfvec = vec2(.5,.5);
 	
-	vec2 samplePos = vec2(gl_Vertex.x, + mod(gl_Vertex.y + flowPosition, 480.0));
+	vec2 vertexPos = gl_Vertex.xy - (gl_Normal.xy * .25);
+	vec2 samplePos = vec2(vertexPos.x, + mod(vertexPos.y + flowPosition, 480.0));
 //	vec2 depthPos = gl_Vertex.xy;
 	
     float depth = depthAtPosition(floor(samplePos.xy) + halfvec);

@@ -11,10 +11,10 @@
 <xrotate>-0.0799999</xrotate>
 	<yrotate>-1.4</yrotate>
 <time_per_portrait>35</time_per_portrait>
-<LED1_bri>0.1</LED1_bri>
-	<LED1_con>1.815</LED1_con>
-	<LED2_bri>0.12</LED2_bri>
-	<LED2_con>1.8</LED2_con>
+<LED1_bri>0.3</LED1_bri>
+	<LED1_con>1.635</LED1_con>
+	<LED2_bri>0.27</LED2_bri>
+	<LED2_con>1.485</LED2_con>
 	<LEFT_FACADE_bri>0.25</LEFT_FACADE_bri>
 	<LEFT_FACADE_con>1.365</LEFT_FACADE_con>
 	<CENTER_FACADE_bri>0.15</CENTER_FACADE_bri>
@@ -22,6 +22,6 @@
 	<RIGHT_FACADE_bri>0.37</RIGHT_FACADE_bri>
 	<RIGHT_FACADE_con>1.365</RIGHT_FACADE_con>
 <flow>50</flow>
-<head_radius>199.5</head_radius>
-	<head_falloff>95.905</head_falloff>
+<head_radius>118.5</head_radius>
+	<head_falloff>295.705</head_falloff>
 </tests>

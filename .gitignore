@@ -24,3 +24,6 @@ xcshareddata/
 *.dll
 *.bak
 *.pdb
+/SPUrbanRenderer/bin/data/Portraits/
+
+/SPUrbanRenderer/bin/SP_Urban_SpectacleOfChange.zip

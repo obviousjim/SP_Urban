@@ -2,9 +2,9 @@
     <portrait name="ALASDAIR_CLOSE">
         <pose>
             <position>
-                <X>191.617340088</X>
-                <Y>106.197196960</Y>
-                <Z>425.327667236</Z>
+                <X>191.000000000</X>
+                <Y>106.000000000</Y>
+                <Z>425.000000000</Z>
             </position>
             <rotation>
                 <X>-0.010218360</X>
@@ -15,9 +15,9 @@
         </pose>
         <pose>
             <position>
-                <X>131.428604126</X>
-                <Y>98.083686829</Y>
-                <Z>500.650421143</Z>
+                <X>131.000000000</X>
+                <Y>98.000000000</Y>
+                <Z>500.000000000</Z>
             </position>
             <rotation>
                 <X>0.000396436</X>
@@ -28,9 +28,9 @@
         </pose>
         <pose>
             <position>
-                <X>-37.461849213</X>
-                <Y>96.982810974</Y>
-                <Z>520.373229980</Z>
+                <X>-37.000000000</X>
+                <Y>96.000000000</Y>
+                <Z>520.000000000</Z>
             </position>
             <rotation>
                 <X>-0.008698473</X>
@@ -149,5 +149,110 @@
     <portrait name="JEN_CLOSE"></portrait>
     <portrait name="KEV_CLOSE"></portrait>
     <portrait name="LISA_CLOSE"></portrait>
-    <portrait name="MARK_CLOSE"></portrait>
+    <portrait name="MARK_CLOSE">
+        <pose>
+            <position>
+                <X>-118.392723083</X>
+                <Y>87.101089478</Y>
+                <Z>626.546813965</Z>
+            </position>
+            <rotation>
+                <X>-0.003175686</X>
+                <Y>0.914581835</Y>
+                <Z>-0.007183401</Z>
+                <W>-0.404324591</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>-292.950958252</X>
+                <Y>-80.043762207</Y>
+                <Z>539.275390625</Z>
+            </position>
+            <rotation>
+                <X>-0.040626734</X>
+                <Y>0.918195248</Y>
+                <Z>-0.097721696</Z>
+                <W>-0.381729603</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>12.684625626</X>
+                <Y>-53.339225769</Y>
+                <Z>452.852325439</Z>
+            </position>
+            <rotation>
+                <X>-0.007102462</X>
+                <Y>0.989391029</Y>
+                <Z>-0.051851980</Z>
+                <W>-0.135522559</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>330.881317139</X>
+                <Y>-72.435905457</Y>
+                <Z>505.405090332</Z>
+            </position>
+            <rotation>
+                <X>0.042899206</X>
+                <Y>0.868501008</Y>
+                <Z>-0.076366022</Z>
+                <W>0.487887144</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>96.118301392</X>
+                <Y>140.898681641</Y>
+                <Z>591.600769043</Z>
+            </position>
+            <rotation>
+                <X>-0.019806277</X>
+                <Y>0.887784898</Y>
+                <Z>0.038373262</Z>
+                <W>0.458228350</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>158.468032837</X>
+                <Y>-142.093978882</Y>
+                <Z>785.251647949</Z>
+            </position>
+            <rotation>
+                <X>-0.016358679</X>
+                <Y>0.803289175</Y>
+                <Z>0.022086974</Z>
+                <W>0.594954729</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>128.632873535</X>
+                <Y>155.776840210</Y>
+                <Z>795.065734863</Z>
+            </position>
+            <rotation>
+                <X>-0.043341000</X>
+                <Y>0.811340392</Y>
+                <Z>0.060648836</Z>
+                <W>0.579801738</W>
+            </rotation>
+        </pose>
+        <pose>
+            <position>
+                <X>174.573104858</X>
+                <Y>92.593292236</Y>
+                <Z>631.431030273</Z>
+            </position>
+            <rotation>
+                <X>-0.027849549</X>
+                <Y>0.906663120</Y>
+                <Z>0.060617693</Z>
+                <W>0.416547626</W>
+            </rotation>
+        </pose>
+    </portrait>
 </poses>
