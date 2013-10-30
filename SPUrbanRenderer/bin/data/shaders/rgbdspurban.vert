@@ -32,6 +32,7 @@ uniform vec2 dP;
 
 
 uniform float flowPosition;
+uniform float extend;
 uniform vec2 headPosition;
 varying float headDistance;
 
@@ -56,43 +57,35 @@ void main(void)
 {
     //align to texture
     vec2 halfvec = vec2(.5,.5);
-	
-	vec2 vertexPos = gl_Vertex.xy - (gl_Normal.xy * .25);
-	vec2 samplePos = vec2(vertexPos.x, + mod(vertexPos.y + flowPosition, 480.0));
-//	vec2 depthPos = gl_Vertex.xy;
+	vec2 center = gl_MultiTexCoord0.st - gl_Normal.xy;
+	vec2 vertexPos = center + gl_Normal.xy * extend;
+
+	vec2 samplePos = vec2(vertexPos.x, mod(vertexPos.y + flowPosition, 480.0));
+	vec2 neighborsamplea = vec2(center.x + gl_Color.x * extend, mod(center.y + gl_Color.y*extend + flowPosition, 480.0));
+	vec2 neighborsampleb = vec2(center.x + gl_Color.z * extend, mod(center.y + gl_Color.w*extend + flowPosition, 480.0));
 	
     float depth = depthAtPosition(floor(samplePos.xy) + halfvec);
-    float right = depthAtPosition(floor(samplePos.xy + vec2(simplify.x,0.0))  + halfvec );
-    float down  = depthAtPosition(floor(samplePos.xy + vec2(0.0,simplify.y))  + halfvec );
-    float left  = depthAtPosition(floor(samplePos.xy + vec2(-simplify.x,0.0)) + halfvec );
-    float up    = depthAtPosition(floor(samplePos.xy + vec2(0.0,-simplify.y)) + halfvec );
-    float bl    = depthAtPosition(vec2(floor(samplePos.x - simplify.x),floor( samplePos.y + simplify.y)) + halfvec );
-    float ur    = depthAtPosition(vec2(floor(samplePos.x  + simplify.x),floor(samplePos.y - simplify.y)) + halfvec );
+	float neighbora = depthAtPosition(floor(neighborsamplea) + halfvec);
+	float neighborb = depthAtPosition(floor(neighborsampleb) + halfvec);
+    //float right = depthAtPosition(floor(samplePos.xy + vec2(simplify.x,0.0))  + halfvec );
+    //float down  = depthAtPosition(floor(samplePos.xy + vec2(0.0,simplify.y))  + halfvec );
+    //float left  = depthAtPosition(floor(samplePos.xy + vec2(-simplify.x,0.0)) + halfvec );
+    //float up    = depthAtPosition(floor(samplePos.xy + vec2(0.0,-simplify.y)) + halfvec );
+    //float bl    = depthAtPosition(vec2(floor(samplePos.x - simplify.x),floor( samplePos.y + simplify.y)) + halfvec );
+    //float ur    = depthAtPosition(vec2(floor(samplePos.x  + simplify.x),floor(samplePos.y - simplify.y)) + halfvec );
 
     //cull invalid verts
     positionValid = (depth < farClip &&
-					 right < farClip &&
-					 down < farClip &&
-					 left < farClip &&
-					 up < farClip &&
-					 bl < farClip &&
-					 ur < farClip &&
+					 neighbora < farClip &&
+					 neighborb < farClip &&
 					 
 					 depth > nearClip &&
-					 right > nearClip &&
-					 down > nearClip &&
-					 left > nearClip &&
-					 up > nearClip &&
-					 bl > nearClip &&
-					 ur > nearClip &&
+					 neighbora > nearClip &&
+					 neighborb > nearClip &&
 					 
-					 abs(down - depth) < edgeClip &&
-					 abs(right - depth) < edgeClip &&
-					 abs(up - depth) < edgeClip &&
-					 abs(left - depth) < edgeClip &&
-					 abs(ur - depth) < edgeClip &&
-					 abs(bl - depth) < edgeClip
-					 ) ? 1.0 : 0.0;
+					 abs(neighbora - depth) < edgeClip &&
+					 abs(neighborb - depth) < edgeClip)
+						? 1.0 : 0.0;
 	
 	
 	vec4 pos = vec4((samplePos.x - principalPoint.x) * depth / fov.x,
@@ -127,6 +120,6 @@ void main(void)
 	
 	gl_TexCoord[0] = texCd;
     gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * pos;
-    gl_FrontColor = gl_Color;
-	
+    gl_FrontColor = gl_Vertex;
+	gl_FrontColor.a = 1.0;
 }

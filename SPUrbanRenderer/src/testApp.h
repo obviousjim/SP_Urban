@@ -20,6 +20,7 @@
 #include "ofxRGBDPlayer.h"
 #include "ofxRGBDGPURenderer.h"
 #include "ofxRGBDCPURenderer.h"
+#include "ofxSyphon.h"
 
 #include "PortraitScreen.h"
 
@@ -86,5 +87,6 @@ class testApp : public ofBaseApp{
 	
 	ofVboMesh mesh;
 	
-	
+	ofFbo fbo;
+	ofxSyphonServer syphonServer;
 };

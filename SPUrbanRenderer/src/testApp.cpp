@@ -15,10 +15,9 @@
 void testApp::setup(){
     
     ofSetFrameRate(60);
-    ofSetVerticalSync(true);
+//    ofSetVerticalSync(true);
     ofBackground(25);
 	
-
     nextPortraitTime = 0;
 	
     //set up the game camera
@@ -106,6 +105,8 @@ void testApp::setup(){
 //		ofLogError("setup") << "center mask dimensions do not match!" << rightmask.getWidth() << " " << rightFacade.getWidth() << " " << rightmask.getHeight() << " " << rightFacade.getHeight();
 //	}
 
+	fbo.allocate(1024, 768, GL_RGB, 4);
+	
 	highlightScreen = NULL;
 	
 	currentPortraitIndex = 0;
@@ -279,38 +280,55 @@ void testApp::generateGeometry(){
 					mesh.addIndex(startIndex+3);
 					mesh.addIndex(startIndex+4);
 					mesh.addIndex(startIndex+5);
-									
-					ofVec3f a = ofVec3f(x,y,0);
-					ofVec3f b = ofVec3f(x+vertStep,y,0);
-					ofVec3f c = ofVec3f(x+vertStep,y+vertStep,0);
-					ofVec3f d = ofVec3f(x,y+vertStep,0);
-					
-					ofVec3f center = (a+b+c+d)*.25;
-					
-					mesh.addVertex(a);
-					mesh.addVertex(b);
-					mesh.addVertex(d);
 
-					mesh.addVertex(b);
-					mesh.addVertex(c);
-					mesh.addVertex(d);
+					ofVec2f a = ofVec2f(x,y);
+					ofVec2f b = ofVec2f(x+vertStep,y);
+					ofVec2f c = ofVec2f(x+vertStep,y+vertStep);
+					ofVec2f d = ofVec2f(x,y+vertStep);
 					
-					mesh.addColor(col);
-					mesh.addColor(col);
-					mesh.addColor(col);
+					ofVec2f center = (a+b+c+d)*.25;
 					
-					mesh.addColor(col);
-					mesh.addColor(col);
-					mesh.addColor(col);
-					
-					mesh.addNormal(a-center);
-					mesh.addNormal(b-center);
-					mesh.addNormal(d-center);
-					
-					mesh.addNormal(b-center);
-					mesh.addNormal(c-center);
-					mesh.addNormal(d-center);
+					ofVec2f na = a-center;
+					ofVec2f nb = b-center;
+					ofVec2f nc = c-center;
+					ofVec2f nd = d-center;
 
+					ofVec3f colvec = ofVec3f(col.r,col.g,col.b);
+					//vertices are actually colors here
+					mesh.addVertex(colvec);
+					mesh.addVertex(colvec);
+					mesh.addVertex(colvec);
+					
+					mesh.addVertex(colvec);
+					mesh.addVertex(colvec);
+					mesh.addVertex(colvec);
+					
+					//Tex coords are actually vertices here
+					mesh.addTexCoord(a);
+					mesh.addTexCoord(b);
+					mesh.addTexCoord(d);
+					
+					mesh.addTexCoord(b);
+					mesh.addTexCoord(c);
+					mesh.addTexCoord(d);
+					
+					//colors are the neighbor normal locations
+					mesh.addColor(ofFloatColor(nb.x,nb.y,nd.x,nd.y)); //neighbors of A1
+					mesh.addColor(ofFloatColor(na.x,na.y,nd.x,nd.y)); //neighbors of B1
+					mesh.addColor(ofFloatColor(na.x,na.y,nb.x,nb.y)); //neighbors of D1
+
+					mesh.addColor(ofFloatColor(nc.x,nc.y,nd.x,nd.y)); //neighbors of B2
+					mesh.addColor(ofFloatColor(nb.x,nb.y,nd.x,nd.y)); //neighbors of C2
+					mesh.addColor(ofFloatColor(nb.x,nb.y,nc.x,nc.y)); //neighbors of D2
+					
+					//normals point to the center point
+					mesh.addNormal(na);
+					mesh.addNormal(nb);
+					mesh.addNormal(nd);
+					
+					mesh.addNormal(nb);
+					mesh.addNormal(nc);
+					mesh.addNormal(nd);
 				}
 				
 				skipping = ofRandomuf() > .95;				
@@ -350,6 +368,9 @@ void testApp::switchPortrait(){
 void testApp::draw(){
     if(player.isLoaded()){
         
+		fbo.begin();
+		ofClear(1.,.1,.1,1);
+		
 		//BACKDROP
 		ofSetColor(ofColor::black);
 		ofDisableAlphaBlending();
@@ -362,10 +383,15 @@ void testApp::draw(){
 		ofSetColor(ofColor::white);
 		glDisable(GL_DEPTH_TEST);
 		for(int i = 0; i < screens.size(); i++){
-			screens[i]->getCameraRef().begin(screens[i]->rect);
+//			screens[i]->getCameraRef().begin(screens[i]->rect);
+			screens[i]->getCameraRef().begin(ofRectangle(screens[i]->rect.x,
+														 fbo.getHeight() - screens[i]->rect.y - screens[i]->rect.height,
+														 screens[i]->rect.width,
+														 screens[i]->rect.height));
 			renderer.bindRenderer();
 			
 			renderer.getShader().setUniform1f("flowPosition", flowSpeed * ofGetElapsedTimef());
+			renderer.getShader().setUniform1f("extend", .75);
 			renderer.getShader().setUniform1f("brightness", screens[i]->brightness);
 			renderer.getShader().setUniform1f("contrast", screens[i]->contrast);
 			renderer.getShader().setUniform2f("headPosition",
@@ -380,24 +406,19 @@ void testApp::draw(){
 			screens[i]->getCameraRef().end();
 		}
 
-
 		//MASK
 		ofEnableAlphaBlending();
 		for(int i = 0; i < screens.size(); i++){
 			if(screens[i]->mask.isAllocated()){
 				screens[i]->mask.draw(screens[i]->rect);
 			}
-			screens[i]->drawDebug();
 		}
 
-		ofPushStyle();
-		ofEnableAlphaBlending();
-		if(highlightScreen != NULL){
-			ofNoFill();
-			ofSetColor(255, 100, 0);
-			ofRect(highlightScreen->rect);
-		}
-		ofPopStyle();
+		fbo.end();
+		
+		syphonServer.publishTexture(&fbo.getTextureReference());
+		
+		fbo.draw(0, 0);
     }
 
 	ofDrawBitmapString("name " + player.getScene().name +
@@ -405,14 +426,36 @@ void testApp::draw(){
 					   "\ntime til next " + ofToString(nextPortraitTime - ofGetElapsedTimef(),2),
 					   led1.rect.getMaxX(), led1.rect.y);
 	
+	ofEnableAlphaBlending();
+	for(int i = 0; i < screens.size(); i++){
+		ofPushStyle();
+		if(highlightScreen == screens[i] ){
+			ofNoFill();
+			ofSetColor(255, 100, 0);
+			ofRect(screens[i]->rect);
+		}
+		else if(!screens[i]->automode){
+			ofNoFill();
+			ofSetColor(100, 255, 30);
+			ofRect(screens[i]->rect);
+		}
+		ofPopStyle();
+		
+		screens[i]->drawDebug();
+	}
+
 
 	renderer.getDepthTexture().draw(depthRect);
+	
 	ofPushStyle();
 	ofSetColor(255, 100, 5, 150);
 	ofNoFill();
 	ofCircle( headPositions[player.getScene().name] * .25 + depthRect.getMin(), 7);
 	ofPopStyle();
+	
     gui.draw();
+	
+
 }
 
 //--------------------------------------------------------------

@@ -21,7 +21,7 @@
 	<CENTER_FACADE_con>1.77</CENTER_FACADE_con>
 	<RIGHT_FACADE_bri>0.37</RIGHT_FACADE_bri>
 	<RIGHT_FACADE_con>1.365</RIGHT_FACADE_con>
-<flow>50</flow>
+<flow>48</flow>
 <head_radius>118.5</head_radius>
 	<head_falloff>295.705</head_falloff>
 </tests>
