@@ -32,7 +32,7 @@ uniform vec2 dP;
 
 
 uniform float flowPosition;
-uniform float extend;
+//uniform float extend;
 uniform vec2 headPosition;
 varying float headDistance;
 
@@ -52,28 +52,47 @@ float depthAtPosition(vec2 samplePosition){
   return 0.0;
 }
 
+vec2 flowedPosition(vec2 basePos){
+	return vec2(basePos.x, mod(basePos.y + flowPosition, 480.0));
+}
+
+float extendForPoint(vec2 point){
+//	return 1.0;
+	float headDistance2d = distance(headPosition, flowedPosition(point) );
+	return max(1. - ( max(headDistance2d - 100., 0.) / 300.), 0.);
+}
+
 ///MAIN ---------------------------
 void main(void)
 {
     //align to texture
     vec2 halfvec = vec2(.5,.5);
+	
+	//head position
+	float headDepth = depthAtPosition(floor(headPosition) + halfvec);
+	vec3 headPos3d = vec3((headPosition.x - principalPoint.x) * headDepth / fov.x,
+						  (headPosition.y - principalPoint.y) * headDepth / fov.y, headDepth);
+
+	float extend = extendForPoint(gl_MultiTexCoord0.st);
+	
 	vec2 center = gl_MultiTexCoord0.st - gl_Normal.xy;
 	vec2 vertexPos = center + gl_Normal.xy * extend;
 
-	vec2 samplePos = vec2(vertexPos.x, mod(vertexPos.y + flowPosition, 480.0));
-	vec2 neighborsamplea = vec2(center.x + gl_Color.x * extend, mod(center.y + gl_Color.y*extend + flowPosition, 480.0));
-	vec2 neighborsampleb = vec2(center.x + gl_Color.z * extend, mod(center.y + gl_Color.w*extend + flowPosition, 480.0));
-	
+	vec2 samplePos = flowedPosition(vertexPos);
+	vec2 neighboralocation = center + gl_Color.xy;
+	vec2 neighborblocation = center + gl_Color.zw;
+	vec2 neighborsamplea = flowedPosition(center + gl_Color.xy * extendForPoint(neighboralocation) );
+	vec2 neighborsampleb = flowedPosition(center + gl_Color.zw * extendForPoint(neighborblocation) );
+
     float depth = depthAtPosition(floor(samplePos.xy) + halfvec);
 	float neighbora = depthAtPosition(floor(neighborsamplea) + halfvec);
 	float neighborb = depthAtPosition(floor(neighborsampleb) + halfvec);
-    //float right = depthAtPosition(floor(samplePos.xy + vec2(simplify.x,0.0))  + halfvec );
-    //float down  = depthAtPosition(floor(samplePos.xy + vec2(0.0,simplify.y))  + halfvec );
-    //float left  = depthAtPosition(floor(samplePos.xy + vec2(-simplify.x,0.0)) + halfvec );
-    //float up    = depthAtPosition(floor(samplePos.xy + vec2(0.0,-simplify.y)) + halfvec );
-    //float bl    = depthAtPosition(vec2(floor(samplePos.x - simplify.x),floor( samplePos.y + simplify.y)) + halfvec );
-    //float ur    = depthAtPosition(vec2(floor(samplePos.x  + simplify.x),floor(samplePos.y - simplify.y)) + halfvec );
 
+	vec4 pos = vec4((samplePos.x - principalPoint.x) * depth / fov.x,
+                    (samplePos.y - principalPoint.y) * depth / fov.y, depth, 1.0);
+	
+	headDistance = distance(pos.xyz,headPos3d);
+	
     //cull invalid verts
     positionValid = (depth < farClip &&
 					 neighbora < farClip &&
@@ -83,21 +102,14 @@ void main(void)
 					 neighbora > nearClip &&
 					 neighborb > nearClip &&
 					 
+					 abs(neighborsamplea.y - samplePos.y) < 30. &&
+					 abs(neighborsampleb.y - samplePos.y) < 30. &&
+				
 					 abs(neighbora - depth) < edgeClip &&
 					 abs(neighborb - depth) < edgeClip)
 						? 1.0 : 0.0;
 	
 	
-	vec4 pos = vec4((samplePos.x - principalPoint.x) * depth / fov.x,
-                    (samplePos.y - principalPoint.y) * depth / fov.y, depth, 1.0);
-	
-	//head position
-	float headDepth = depthAtPosition(floor(headPosition) + halfvec);
-	vec3 headPos3d = vec3((headPosition.x - principalPoint.x) * headDepth / fov.x,
-						  (headPosition.y - principalPoint.y) * headDepth / fov.y, depth);
-	
-
-	headDistance = distance(pos.xyz,headPos3d);
 	
     //projective texture on the geometry
 	//http://opencv.willowgarage.com/documentation/camera_calibration_and_3d_reconstruction.html

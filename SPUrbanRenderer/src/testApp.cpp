@@ -286,13 +286,23 @@ void testApp::generateGeometry(){
 					ofVec2f c = ofVec2f(x+vertStep,y+vertStep);
 					ofVec2f d = ofVec2f(x,y+vertStep);
 					
+					float av = ofRandom(.8,1.0);
+					float bv = ofRandom(.8,1.0);
+					float cv = ofRandom(.8,1.0);
+					float dv = ofRandom(.8,1.0);
+					
 					ofVec2f center = (a+b+c+d)*.25;
 					
-					ofVec2f na = a-center;
-					ofVec2f nb = b-center;
-					ofVec2f nc = c-center;
-					ofVec2f nd = d-center;
+					ofVec3f na = a-center;
+					ofVec3f nb = b-center;
+					ofVec3f nc = c-center;
+					ofVec3f nd = d-center;
 
+					na.z = av;
+					nb.z = bv;
+					nc.z = cv;
+					nd.z = dv;
+					
 					ofVec3f colvec = ofVec3f(col.r,col.g,col.b);
 					//vertices are actually colors here
 					mesh.addVertex(colvec);
@@ -331,7 +341,7 @@ void testApp::generateGeometry(){
 					mesh.addNormal(nd);
 				}
 				
-				skipping = ofRandomuf() > .95;				
+				skipping = ofRandomuf() > .95;
 			}
 		}
 	}
