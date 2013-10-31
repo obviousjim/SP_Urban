@@ -9,6 +9,8 @@ uniform vec2 scale;
 
 // DEPTH
 uniform sampler2DRect depthTex;
+uniform sampler2DRect varianceTex;
+
 uniform vec2 principalPoint;
 uniform vec2 fov;
 uniform float farClip;
@@ -32,7 +34,11 @@ uniform vec2 dP;
 
 
 uniform float flowPosition;
-//uniform float extend;
+
+uniform float maxExtend;
+uniform float extendThreshold;
+uniform float extendFalloff;
+
 uniform vec2 headPosition;
 varying float headDistance;
 
@@ -56,10 +62,11 @@ vec2 flowedPosition(vec2 basePos){
 	return vec2(basePos.x, mod(basePos.y + flowPosition, 480.0));
 }
 
-float extendForPoint(vec2 point){
+float extendForPoint(vec2 point, vec2 center){
 //	return 1.0;
 	float headDistance2d = distance(headPosition, flowedPosition(point) );
-	return max(1. - ( max(headDistance2d - 100., 0.) / 300.), 0.);
+	return max(maxExtend - ( max(headDistance2d - extendThreshold, 0.) / extendFalloff), 0. ) * texture2DRect(varianceTex,center).r;
+	//return texture2DRect(varianceTex,center).r;
 }
 
 ///MAIN ---------------------------
@@ -72,17 +79,17 @@ void main(void)
 	float headDepth = depthAtPosition(floor(headPosition) + halfvec);
 	vec3 headPos3d = vec3((headPosition.x - principalPoint.x) * headDepth / fov.x,
 						  (headPosition.y - principalPoint.y) * headDepth / fov.y, headDepth);
-
-	float extend = extendForPoint(gl_MultiTexCoord0.st);
 	
 	vec2 center = gl_MultiTexCoord0.st - gl_Normal.xy;
+	float extend = extendForPoint(gl_MultiTexCoord0.st, center);
+	
 	vec2 vertexPos = center + gl_Normal.xy * extend;
 
 	vec2 samplePos = flowedPosition(vertexPos);
 	vec2 neighboralocation = center + gl_Color.xy;
 	vec2 neighborblocation = center + gl_Color.zw;
-	vec2 neighborsamplea = flowedPosition(center + gl_Color.xy * extendForPoint(neighboralocation) );
-	vec2 neighborsampleb = flowedPosition(center + gl_Color.zw * extendForPoint(neighborblocation) );
+	vec2 neighborsamplea = flowedPosition(center + gl_Color.xy * extendForPoint(neighboralocation,center) );
+	vec2 neighborsampleb = flowedPosition(center + gl_Color.zw * extendForPoint(neighborblocation,center) );
 
     float depth = depthAtPosition(floor(samplePos.xy) + halfvec);
 	float neighbora = depthAtPosition(floor(neighborsamplea) + halfvec);

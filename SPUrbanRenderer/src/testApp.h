@@ -64,7 +64,11 @@ class testApp : public ofBaseApp{
 	ofxFloatSlider zclip;
 	ofxFloatSlider timePerPortrait;
 	ofxFloatSlider flowSpeed;
-	
+
+	ofxFloatSlider maxExtend;
+	ofxFloatSlider extendThreshold;
+	ofxFloatSlider extendFalloff;
+
 	ofxFloatSlider headSphereRadius;
 	ofxFloatSlider headEffectFalloff;
 
@@ -86,6 +90,9 @@ class testApp : public ofBaseApp{
 	PortraitScreen rightFacade;
 	
 	ofVboMesh mesh;
+	ofVboMesh pointfill;
+	ofFloatImage varianceImage;
+	ofFloatImage speedVarianceImage;
 	
 	ofFbo fbo;
 	ofxSyphonServer syphonServer;

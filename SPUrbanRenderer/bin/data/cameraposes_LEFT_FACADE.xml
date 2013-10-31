@@ -65,6 +65,19 @@
                 <W>0.676421940</W>
             </rotation>
         </pose>
+        <pose>
+            <position>
+                <X>162.244567871</X>
+                <Y>148.789566040</Y>
+                <Z>596.548767090</Z>
+            </position>
+            <rotation>
+                <X>-0.041845683</X>
+                <Y>0.777055681</Y>
+                <Z>0.051952563</Z>
+                <W>0.625886858</W>
+            </rotation>
+        </pose>
     </portrait>
     <portrait name="ALICE_CLOSE">
         <pose>
@@ -135,14 +148,12 @@
             </rotation>
         </pose>
     </portrait>
-    <portrait name="KEV_CLOSE"></portrait>
-    <portrait name="LISA_CLOSE"></portrait>
     <portrait name="MARK_CLOSE">
         <pose>
             <position>
-                <X>135.354797363</X>
-                <Y>-55.079185486</Y>
-                <Z>799.392700195</Z>
+                <X>135.000000000</X>
+                <Y>-55.000000000</Y>
+                <Z>799.000000000</Z>
             </position>
             <rotation>
                 <X>-0.094009511</X>
@@ -153,9 +164,9 @@
         </pose>
         <pose>
             <position>
-                <X>157.346633911</X>
-                <Y>200.227416992</Y>
-                <Z>782.901367188</Z>
+                <X>157.000000000</X>
+                <Y>200.000000000</Y>
+                <Z>782.000000000</Z>
             </position>
             <rotation>
                 <X>-0.071814641</X>
@@ -166,9 +177,9 @@
         </pose>
         <pose>
             <position>
-                <X>147.308105469</X>
-                <Y>142.662490845</Y>
-                <Z>782.545654297</Z>
+                <X>147.000000000</X>
+                <Y>142.000000000</Y>
+                <Z>782.000000000</Z>
             </position>
             <rotation>
                 <X>-0.043447424</X>
@@ -179,9 +190,9 @@
         </pose>
         <pose>
             <position>
-                <X>421.485656738</X>
-                <Y>-96.014129639</Y>
-                <Z>799.278381348</Z>
+                <X>421.000000000</X>
+                <Y>-96.000000000</Y>
+                <Z>799.000000000</Z>
             </position>
             <rotation>
                 <X>0.000915826</X>

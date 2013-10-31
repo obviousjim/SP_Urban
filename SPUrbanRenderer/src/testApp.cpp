@@ -1,12 +1,9 @@
 /**
- * Example - Mesh Builder
- * This example shows how to create a RGBD Mesh on the CPU
+ * SP_Urban renderer
+ * Display for the SP_Urban facade, Spectacle of Change portrait series
  *
+ * (C) James George 2013
  *
- * James George 2012 
- * Released under the MIT License
- *
- * The RGBDToolkit has been developed with support from the STUDIO for Creative Inquiry and Eyebeam
  */
 
 #include "testApp.h"
@@ -15,20 +12,16 @@
 void testApp::setup(){
     
     ofSetFrameRate(60);
-//    ofSetVerticalSync(true);
     ofBackground(25);
 	
     nextPortraitTime = 0;
 	
     //set up the game camera
-    
     xrotate = 0;
     yrotate = 0;
     
-
 	renderer.setShaderPath("shaders/rgbdspurban");
 	
-
 	led1.name = "LED1";
 	led1.rect = ofRectangle(280, 10, 760-280,298-10);
 	led1.debugLocation.x = led1.rect.getMaxX();
@@ -74,6 +67,9 @@ void testApp::setup(){
 
 	gui.add(headSphereRadius.setup("head radius", ofParameter<float>(), 0, 300));
 	gui.add(headEffectFalloff.setup("head falloff", ofParameter<float>(), 1, 1000));
+	gui.add(maxExtend.setup("max geom extend", ofParameter<float>(), .5, 1.0));
+	gui.add(extendThreshold.setup("geom extend thresh", ofParameter<float>(), 0, 300));
+	gui.add(extendFalloff.setup("geom extend falloff", ofParameter<float>(), 20, 500));
 
 	for(int i = 0; i < screens.size(); i++){
 		gui.add( screens[i]->brightness.setup(screens[i]->name + " bri",ofParameter<float>(), 0, 2) );
@@ -111,9 +107,6 @@ void testApp::setup(){
 	
 	currentPortraitIndex = 0;
 	switchPortrait();
-	//attemping to load the last scene
-//    loadDefaultScene();
-	
 
 	loadHeadPositions();
 
@@ -121,27 +114,6 @@ void testApp::setup(){
 	ofToggleFullscreen();
 	
 }
-
-//--------------------------------------------------------------
-//bool testApp::loadNewScene(){
-//    ofFileDialogResult r = ofSystemLoadDialog("Select a Scene", true);
-//    if(r.bSuccess){
-//        return loadScene(r.getPath());
-//    }
-//    return false;
-//}
-
-//--------------------------------------------------------------
-//bool testApp::loadDefaultScene(){
-//    ofxXmlSettings settings;
-//    if(settings.loadFile("RGBDSimpleSceneDefaults.xml")){
-//        if(!loadScene(settings.getValue("defaultScene", ""))){
-//            return loadNewScene();
-//        }
-//        return true;
-//    }
-//    return loadNewScene();
-//}
 
 //--------------------------------------------------------------
 bool testApp::loadScene(string takeDirectory){
@@ -268,8 +240,9 @@ void testApp::generateGeometry(){
 				skipping = ofRandomuf() > .7;
 				col = ofFloatColor::fromHsb(ofRandomuf(), 1.0, 1.0);
 			}
-			else{				
-				for(int x = c * colStep; x < (c+1) * colStep - vertStep; x += vertStep ) {
+			else {
+				
+				for(int x = c * colStep; x < (c+1) * colStep ; x += vertStep ) {
 					
 					//add  two triangles for each
 					ofIndexType startIndex = mesh.getNumIndices();
@@ -346,6 +319,23 @@ void testApp::generateGeometry(){
 		}
 	}
 
+	//create variance image
+	varianceImage.allocate(640, 480, OF_IMAGE_GRAYSCALE);
+	for(int i = 0; i < varianceImage.getWidth()*varianceImage.getHeight(); i++){
+		if(ofRandomuf() > .9){
+			varianceImage.getPixels()[i] = ofRandomuf() * .1; //dead pixel
+		}
+		else{
+			varianceImage.getPixels()[i] = ofMap(1.0 - powf(ofRandomuf(), 2.), 0.0, 1.0, .6, 1.0);
+		}
+	}
+	varianceImage.update();
+	
+	speedVarianceImage.allocate(640,1, OF_IMAGE_GRAYSCALE);
+	for (int i = 0; i < speedVarianceImage.getWidth(); i++) {
+		speedVarianceImage.getPixels()[i] = ofMap(powf(ofRandomuf(),2.),1.0, 0.0, .5, 1.0);
+	}
+	speedVarianceImage.update();
 	renderer.setSimplification( ofVec2f(vertStep,vertStep) );
 }
 
@@ -393,7 +383,6 @@ void testApp::draw(){
 		ofSetColor(ofColor::white);
 		glDisable(GL_DEPTH_TEST);
 		for(int i = 0; i < screens.size(); i++){
-//			screens[i]->getCameraRef().begin(screens[i]->rect);
 			screens[i]->getCameraRef().begin(ofRectangle(screens[i]->rect.x,
 														 fbo.getHeight() - screens[i]->rect.y - screens[i]->rect.height,
 														 screens[i]->rect.width,
@@ -401,7 +390,6 @@ void testApp::draw(){
 			renderer.bindRenderer();
 			
 			renderer.getShader().setUniform1f("flowPosition", flowSpeed * ofGetElapsedTimef());
-			renderer.getShader().setUniform1f("extend", .75);
 			renderer.getShader().setUniform1f("brightness", screens[i]->brightness);
 			renderer.getShader().setUniform1f("contrast", screens[i]->contrast);
 			renderer.getShader().setUniform2f("headPosition",
@@ -410,6 +398,12 @@ void testApp::draw(){
 			
 			renderer.getShader().setUniform1f("headSphereRadius",headSphereRadius);
 			renderer.getShader().setUniform1f("headEffectFalloff",headEffectFalloff);
+
+			renderer.getShader().setUniform1f("maxExtend",maxExtend);
+			renderer.getShader().setUniform1f("extendThreshold",extendThreshold);
+			renderer.getShader().setUniform1f("extendFalloff",extendFalloff);
+			
+			renderer.getShader().setUniformTexture("varianceTex",varianceImage, 3);
 
 			mesh.draw();
 			renderer.unbindRenderer();
@@ -437,6 +431,7 @@ void testApp::draw(){
 					   led1.rect.getMaxX(), led1.rect.y);
 	
 	ofEnableAlphaBlending();
+
 	for(int i = 0; i < screens.size(); i++){
 		ofPushStyle();
 		if(highlightScreen == screens[i] ){
@@ -549,8 +544,4 @@ void testApp::gotMessage(ofMessage msg){
 
 //--------------------------------------------------------------
 void testApp::dragEvent(ofDragInfo dragInfo){
-//	ofDirectory dir(dragInfo.files[0]);
-//	if( dir.isDirectory() && ofxRGBDScene::isFolderValid(dragInfo.files[0]) ){
-//		loadScene(dragInfo.files[0]);
-//	}
 }
