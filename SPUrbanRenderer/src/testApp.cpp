@@ -111,7 +111,7 @@ void testApp::setup(){
 	loadHeadPositions();
 
 	generateGeometry();
-	ofToggleFullscreen();
+//	ofToggleFullscreen();
 	
 }
 
@@ -322,18 +322,18 @@ void testApp::generateGeometry(){
 	//create variance image
 	varianceImage.allocate(640, 480, OF_IMAGE_GRAYSCALE);
 	for(int i = 0; i < varianceImage.getWidth()*varianceImage.getHeight(); i++){
-		if(ofRandomuf() > .9){
-			varianceImage.getPixels()[i] = ofRandomuf() * .1; //dead pixel
+		if(ofRandomuf() > .90){
+			varianceImage.getPixels()[i] = 0; //dead pixel
 		}
 		else{
-			varianceImage.getPixels()[i] = ofMap(1.0 - powf(ofRandomuf(), 2.), 0.0, 1.0, .6, 1.0);
+			varianceImage.getPixels()[i] = ofMap(powf(ofRandomuf(), 4.), 1.0, 0.0, .9, 1.0);
 		}
 	}
 	varianceImage.update();
 	
-	speedVarianceImage.allocate(640,1, OF_IMAGE_GRAYSCALE);
+	speedVarianceImage.allocate(640, 1, OF_IMAGE_GRAYSCALE);
 	for (int i = 0; i < speedVarianceImage.getWidth(); i++) {
-		speedVarianceImage.getPixels()[i] = ofMap(powf(ofRandomuf(),2.),1.0, 0.0, .5, 1.0);
+		speedVarianceImage.getPixels()[i] = ofMap(powf(ofRandomuf(),2.),1.0, 0.0, .3, 1.0);
 	}
 	speedVarianceImage.update();
 	renderer.setSimplification( ofVec2f(vertStep,vertStep) );
@@ -354,6 +354,7 @@ void testApp::gotoPreviousPortrait(){
 //--------------------------------------------------------------
 void testApp::switchPortrait(){
 	if(!loadScene( paths[currentPortraitIndex] )){
+		ofSystemAlertDialog("Couldn't load path " + paths[currentPortraitIndex] );
 		ofLogError("testApp::switchPortrait") << "Failed to load portrait " << paths[currentPortraitIndex];
 		return;
 	}
@@ -379,7 +380,7 @@ void testApp::draw(){
 		}
 		
 		//PORTRAIT
-		ofEnableBlendMode(OF_BLENDMODE_SCREEN);
+		ofEnableBlendMode(OF_BLENDMODE_ADD);
 		ofSetColor(ofColor::white);
 		glDisable(GL_DEPTH_TEST);
 		for(int i = 0; i < screens.size(); i++){
@@ -404,8 +405,10 @@ void testApp::draw(){
 			renderer.getShader().setUniform1f("extendFalloff",extendFalloff);
 			
 			renderer.getShader().setUniformTexture("varianceTex",varianceImage, 3);
+			renderer.getShader().setUniformTexture("speedVarianceTex",speedVarianceImage, 4);
 
 			mesh.draw();
+
 			renderer.unbindRenderer();
 			screens[i]->getCameraRef().end();
 		}
@@ -484,6 +487,9 @@ void testApp::keyPressed(int key){
 	}
 	if(key == 'N' && highlightScreen != NULL){
 		highlightScreen->nextPose();
+	}
+	if(key == OF_KEY_RIGHT){
+		gotoNextPortrait();
 	}
 }
 

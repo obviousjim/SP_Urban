@@ -8,14 +8,16 @@
 
 #include "PortraitScreen.h"
 #include "ofxXmlSettings.h"
+#include "ofxTween.h"
 
 PortraitScreen::PortraitScreen(){
 	automode = true;
 	minChangeTime = 5;
-	changeTimeVariance = 2;
+	changeTimeVariance = 4;
 	nextChangeTime = 0;
 	currentCameraSample = -1;
 	pair = NULL; //used to ignore duplicates
+	cameraTransition = false;
 }
 
 void PortraitScreen::setup(){
@@ -32,8 +34,6 @@ void PortraitScreen::setup(){
 	cam.loadCameraPosition();
 
 	load();
-	
-	
 }
 
 void PortraitScreen::save(){
@@ -175,16 +175,46 @@ void PortraitScreen::update(){
 			do {
 				currentCameraSample = ofRandom(poses.size());
 			} while(currentCameraSample != currentCameraSample && tries-- > 0);
-					
+			
 			updateCameraPose();
 		}
+	}
+	if(cameraTransition){
+		updateCameraSwoop();
 	}
 }
 
 void PortraitScreen::updateCameraPose(){
-	vector<ofNode>& poses = cameraPositions[currentPortrait];	
-	normalCam.setPosition( poses[currentCameraSample].getPosition() );
-	normalCam.setOrientation( poses[currentCameraSample].getOrientationQuat() );
+	vector<ofNode>& poses = cameraPositions[currentPortrait];
+	target = poses[currentCameraSample];
+	if(ofRandomuf() > .7){
+		cameraTransition = true;
+		beginning = normalCam;
+		transitionStart = ofGetElapsedTimef();
+		transitionEnd = transitionStart + 1;
+		//if(name == "LED1") cout << "*** entering transition" << endl;
+	}
+	else{
+		cameraTransition = false;
+		normalCam.setPosition( target.getPosition() );
+		normalCam.setOrientation( target.getOrientationQuat() );
+	}
+}
+
+void PortraitScreen::updateCameraSwoop(){
+	ofxEasingSine eq;
+	float alpha = ofxTween::map(ofGetElapsedTimef(), transitionStart, transitionEnd, 0, 1.0, true, eq, ofxTween::easeInOut);
+//	if(name == "LED1") cout << "	transition cur: " << ofGetElapsedTimef() << " start " << transitionStart << " end " << transitionEnd << " percent " << alpha << endl;
+
+	normalCam.setPosition( beginning.getPosition().getInterpolated(target.getPosition(), alpha) );
+	ofQuaternion q;
+	q.slerp(alpha, beginning.getOrientationQuat(), target.getOrientationQuat());
+	normalCam.setOrientation( q );
+	if(alpha >= 1.){
+		cameraTransition = false;
+		//if(name == "LED1") cout << "exiting transition" << endl;
+	}
+	
 }
 
 void PortraitScreen::draw(){

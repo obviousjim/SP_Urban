@@ -10,7 +10,7 @@ uniform vec2 scale;
 // DEPTH
 uniform sampler2DRect depthTex;
 uniform sampler2DRect varianceTex;
-
+uniform sampler2DRect speedVarianceTex;
 uniform vec2 principalPoint;
 uniform vec2 fov;
 uniform float farClip;
@@ -58,13 +58,14 @@ float depthAtPosition(vec2 samplePosition){
   return 0.0;
 }
 
-vec2 flowedPosition(vec2 basePos){
-	return vec2(basePos.x, mod(basePos.y + flowPosition, 480.0));
+vec2 flowedPosition(vec2 basePos, vec2 center){
+	return vec2(basePos.x, mod(basePos.y + flowPosition * texture2DRect(speedVarianceTex,vec2(center.x,.5)).r, 480.0));
+	//return vec2(basePos.x, mod(basePos.y + flowPosition, 480.0));
 }
 
 float extendForPoint(vec2 point, vec2 center){
 //	return 1.0;
-	float headDistance2d = distance(headPosition, flowedPosition(point) );
+	float headDistance2d = distance(headPosition, flowedPosition(point,center) );
 	return max(maxExtend - ( max(headDistance2d - extendThreshold, 0.) / extendFalloff), 0. ) * texture2DRect(varianceTex,center).r;
 	//return texture2DRect(varianceTex,center).r;
 }
@@ -85,11 +86,11 @@ void main(void)
 	
 	vec2 vertexPos = center + gl_Normal.xy * extend;
 
-	vec2 samplePos = flowedPosition(vertexPos);
+	vec2 samplePos = flowedPosition(vertexPos, center);
 	vec2 neighboralocation = center + gl_Color.xy;
 	vec2 neighborblocation = center + gl_Color.zw;
-	vec2 neighborsamplea = flowedPosition(center + gl_Color.xy * extendForPoint(neighboralocation,center) );
-	vec2 neighborsampleb = flowedPosition(center + gl_Color.zw * extendForPoint(neighborblocation,center) );
+	vec2 neighborsamplea = flowedPosition(center + gl_Color.xy * extendForPoint(neighboralocation,center),center );
+	vec2 neighborsampleb = flowedPosition(center + gl_Color.zw * extendForPoint(neighborblocation,center),center );
 
     float depth = depthAtPosition(floor(samplePos.xy) + halfvec);
 	float neighbora = depthAtPosition(floor(neighborsamplea) + halfvec);
@@ -140,5 +141,5 @@ void main(void)
 	gl_TexCoord[0] = texCd;
     gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * pos;
     gl_FrontColor = gl_Vertex;
-	gl_FrontColor.a = 1.0;
+	gl_FrontColor.a = extend;
 }

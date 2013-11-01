@@ -25,6 +25,7 @@ void main()
 	// Apply brightness.
 	col.rgb += brightness;
 		
-	gl_FragColor = mix(gl_Color, col, max(1. - ( max(headDistance - headSphereRadius,0.) / headEffectFalloff), 0.));
+	gl_FragColor = mix(gl_Color, col, max(1. - ( max(headDistance - headSphereRadius,0.) / headEffectFalloff), 0.)) * gl_Color.a;
 	gl_FragColor.a = 1.0;
+;
 }

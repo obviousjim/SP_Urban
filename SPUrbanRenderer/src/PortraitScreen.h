@@ -36,6 +36,13 @@ class PortraitScreen {
 
 	bool automode;
 	
+	bool cameraTransition;
+	float transitionStart;
+	float transitionEnd;;
+	ofNode beginning;
+	ofNode target;
+	void updateCameraSwoop();
+	
 	void setup();
 	void update();
 	void draw();
