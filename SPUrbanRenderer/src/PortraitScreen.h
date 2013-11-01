@@ -67,4 +67,5 @@ class PortraitScreen {
 	ofxFloatSlider *maxExtend;
 	ofxFloatSlider *varianceEffect;
 	
+	
 };

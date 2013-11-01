@@ -15,6 +15,7 @@ uniform sampler2DRect paletteTex;
 
 uniform vec2 principalPoint;
 uniform vec2 fov;
+
 uniform float farClip;
 uniform float nearClip;
 

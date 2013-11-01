@@ -88,6 +88,10 @@ void testApp::setup(){
 	gui.add(pureColorThreshold.setup("pure color thresh", ofParameter<float>(), .2, 1.0));
 	gui.add(pureColorFlicker.setup("pure color flicker", ofParameter<float>(), .01, .1));
 	
+	gui.add(facadeColorCorrectR.setup("correct r", ofParameter<float>(), -.2,.2));
+	gui.add(facadeColorCorrectB.setup("correct g", ofParameter<float>(), -.2,.2));
+	gui.add(facadeColorCorrectG.setup("correct b", ofParameter<float>(), -.2,.2));
+
 	for(int i = 0; i < screens.size(); i++){
 		gui.add( screens[i]->brightness.setup(screens[i]->name + " bri",ofParameter<float>(), 0, 2) );
 		gui.add( screens[i]->contrast.setup(screens[i]->name + " con",ofParameter<float>(), 0, 3) );
@@ -460,7 +464,16 @@ void testApp::draw(){
 			renderer.getShader().setUniformTexture("varianceTex",varianceImage, 3);
 			renderer.getShader().setUniformTexture("speedVarianceTex",speedVarianceImage, 4);
 			renderer.getShader().setUniformTexture("paletteTex", colorPalettes[currentPalette], 5);
-			
+
+			if(screens[i]->name.find("LED") != string::npos){
+				renderer.getShader().setUniform4f("colorCorrect",0,0,0,0);
+			}
+			else{
+				renderer.getShader().setUniform4f("colorCorrect",
+												  facadeColorCorrectR,
+												  facadeColorCorrectG,
+												  facadeColorCorrectB,0);
+			}
 			mesh.draw();
 
 			renderer.unbindRenderer();
