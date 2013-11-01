@@ -11,11 +11,11 @@
 <xrotate>0.36</xrotate>
 	<yrotate>-0.48</yrotate>
 <time_per_portrait>35.75</time_per_portrait>
-<LED1_bri>0.21</LED1_bri>
+<LED1_bri>0.35</LED1_bri>
 	<LED1_con>1.95</LED1_con>
-	<LED2_bri>0.11</LED2_bri>
-	<LED2_con>1.395</LED2_con>
-	<LEFT_FACADE_bri>0.01</LEFT_FACADE_bri>
+	<LED2_bri>0.2</LED2_bri>
+	<LED2_con>1.35</LED2_con>
+	<LEFT_FACADE_bri>0.2</LEFT_FACADE_bri>
 	<LEFT_FACADE_con>1.365</LEFT_FACADE_con>
 	<CENTER_FACADE_bri>0.15</CENTER_FACADE_bri>
 	<CENTER_FACADE_con>1.77</CENTER_FACADE_con>
@@ -33,9 +33,10 @@
 	<variance_effect_Facade>0.625</variance_effect_Facade>
 	<variance_effect_LED>0.625</variance_effect_LED>
 <max_extend_Facade>1</max_extend_Facade>
-	<max_extend_LED>0.885</max_extend_LED>
+	<max_extend_LED>0.9325</max_extend_LED>
 	<variance_Facade>0.085</variance_Facade>
 	<variance_LED>1</variance_LED>
 <pure_color_thres>0.964</pure_color_thres>
-<pure_color_thresh>0.98</pure_color_thresh>
+<pure_color_thresh>0.972</pure_color_thresh>
+<pure_color_flicker>0.05275</pure_color_flicker>
 </tests>

@@ -41,6 +41,8 @@ uniform float extendThreshold;
 uniform float extendFalloff;
 uniform float varianceEffect;
 
+uniform float pureColorFlicker;
+
 uniform vec2 headPosition;
 varying float headDistance;
 
@@ -144,7 +146,7 @@ void main(void)
 	gl_TexCoord[0] = texCd;
     gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * pos;
     gl_FrontColor = texture2DRect(paletteTex,gl_Vertex.xy);
-	pureColor = mod(gl_Vertex.z+flowPosition*.002,1.0);
+	pureColor = mod(gl_Vertex.z+pureColorFlicker,1.0);
 	
 	gl_FrontColor.a = extend;
 }

@@ -16,6 +16,7 @@ void testApp::setup(){
 	
     nextPortraitTime = 0;
 	currentPalette = 0;
+	pureColorFlickerPos = 0;
 	
     //set up the game camera
     xrotate = 0;
@@ -85,6 +86,7 @@ void testApp::setup(){
 	gui.add(varianceEffectFacade.setup("variance Facade", ofParameter<float>(), 0, 1.0));
 	gui.add(varianceEffectLED.setup("variance LED", ofParameter<float>(), 0, 1.0));
 	gui.add(pureColorThreshold.setup("pure color thresh", ofParameter<float>(), .2, 1.0));
+	gui.add(pureColorFlicker.setup("pure color flicker", ofParameter<float>(), .01, .1));
 	
 	for(int i = 0; i < screens.size(); i++){
 		gui.add( screens[i]->brightness.setup(screens[i]->name + " bri",ofParameter<float>(), 0, 2) );
@@ -162,7 +164,8 @@ void testApp::update(){
     renderer.colorMatrixRotate.x = xrotate;
 	renderer.colorMatrixRotate.y = yrotate;
 	renderer.farClip = zclip;
-
+	pureColorFlickerPos += powf(pureColorFlicker,2.);
+	
     //update the mesh if there is a new depth frame in the player
     player.update();
     if(player.isFrameNew()){
@@ -449,6 +452,7 @@ void testApp::draw(){
 			renderer.getShader().setUniform1f("extendThreshold",extendThreshold);
 			renderer.getShader().setUniform1f("extendFalloff",extendFalloff);
 			renderer.getShader().setUniform1f("pureColorThreshold",pureColorThreshold);
+			renderer.getShader().setUniform1f("pureColorFlicker",pureColorFlickerPos);
 			
 			renderer.getShader().setUniformTexture("varianceTex",varianceImage, 3);
 			renderer.getShader().setUniformTexture("speedVarianceTex",speedVarianceImage, 4);

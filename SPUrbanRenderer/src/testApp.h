@@ -76,6 +76,8 @@ class testApp : public ofBaseApp{
 	ofxFloatSlider varianceEffectLED;
 	ofxFloatSlider varianceEffectFacade;
 	ofxFloatSlider pureColorThreshold;
+	ofxFloatSlider pureColorFlicker;
+	float pureColorFlickerPos;
 	
 //    bool loadNewScene();
 //    bool loadDefaultScene();

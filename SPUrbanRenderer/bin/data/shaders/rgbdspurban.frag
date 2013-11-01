@@ -29,8 +29,11 @@ void main()
 	// Apply brightness.
 	tex.rgb += brightness;
 		
-	gl_FragColor = mix(gl_Color, tex, mix(0.0, max(1. - ( max(headDistance - headSphereRadius,0.) / headEffectFalloff), 0.), step(pureColor,pureColorThreshold))) * gl_Color.a;
+	gl_FragColor = mix(gl_Color, tex,
+					   mix(0.0, max(1. - ( max(headDistance - headSphereRadius,0.) / headEffectFalloff), 0.),
+						   step(pureColor,pureColorThreshold)))
+								* gl_Color.a;
 	
 	gl_FragColor.a = 1.0;
-//	gl_FragColor = vec4(step(pureColor,pureColorThreshold));
+
 }
