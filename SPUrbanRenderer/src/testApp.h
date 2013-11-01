@@ -55,6 +55,7 @@ class testApp : public ofBaseApp{
 	void gotoPreviousPortrait();
 	void switchPortrait();
 	float nextPortraitTime;
+	float portraitChangedTime;
 	
 	ofRectangle depthRect;
 	

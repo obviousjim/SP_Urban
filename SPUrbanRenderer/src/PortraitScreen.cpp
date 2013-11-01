@@ -171,10 +171,15 @@ void PortraitScreen::update(){
 				return;
 			}
 			
+			int nextCameraSample;
 			int tries = 10;
+			float poseDistance;
 			do {
-				currentCameraSample = ofRandom(poses.size());
-			} while(currentCameraSample != currentCameraSample && tries-- > 0);
+				nextCameraSample = ofRandom(poses.size());
+				poseDistance = poses[nextCameraSample].getPosition().distance(poses[currentCameraSample].getPosition());
+//				cout << "pose difference " << poseDistance << endl;
+			} while(poseDistance < 400 && tries-- > 0);
+			currentCameraSample = nextCameraSample;
 			
 			updateCameraPose();
 		}
@@ -191,7 +196,7 @@ void PortraitScreen::updateCameraPose(){
 		cameraTransition = true;
 		beginning = normalCam;
 		transitionStart = ofGetElapsedTimef();
-		transitionEnd = transitionStart + 1;
+		transitionEnd = transitionStart + 2;
 		//if(name == "LED1") cout << "*** entering transition" << endl;
 	}
 	else{
@@ -202,7 +207,7 @@ void PortraitScreen::updateCameraPose(){
 }
 
 void PortraitScreen::updateCameraSwoop(){
-	ofxEasingSine eq;
+	ofxEasingQuad eq;
 	float alpha = ofxTween::map(ofGetElapsedTimef(), transitionStart, transitionEnd, 0, 1.0, true, eq, ofxTween::easeInOut);
 //	if(name == "LED1") cout << "	transition cur: " << ofGetElapsedTimef() << " start " << transitionStart << " end " << transitionEnd << " percent " << alpha << endl;
 

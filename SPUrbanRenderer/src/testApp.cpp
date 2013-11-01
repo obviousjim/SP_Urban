@@ -180,11 +180,11 @@ void testApp::update(){
 		
 		if(!hasComposeMode){
 			gotoNextPortrait();
-			
-			nextPortraitTime = ofGetElapsedTimef() + timePerPortrait;
-			for(int i = 0; i < screens.size(); i++){
-				screens[i]->nextPose();
-			}
+			portraitChangedTime = ofGetElapsedTimef();
+			nextPortraitTime = portraitChangedTime + timePerPortrait;
+//			for(int i = 0; i < screens.size(); i++){
+//				screens[i]->nextPose();
+//			}
 		}
 	}
 
@@ -448,7 +448,10 @@ void testApp::draw(){
 			renderer.getShader().setUniform1f("headEffectFalloff",headEffectFalloff);
 			renderer.getShader().setUniform1f("varianceEffect",*screens[i]->varianceEffect);
 			
-			renderer.getShader().setUniform1f("maxExtend",*screens[i]->maxExtend);
+			renderer.getShader().setUniform1f("maxExtend",*screens[i]->maxExtend
+											  * ofMap( nextPortraitTime- ofGetElapsedTimef(), .5, 0, 1.0, 0.0, true)
+											  * ofMap( ofGetElapsedTimef() - portraitChangedTime, 0, .5, .0, 1.0, true));
+
 			renderer.getShader().setUniform1f("extendThreshold",extendThreshold);
 			renderer.getShader().setUniform1f("extendFalloff",extendFalloff);
 			renderer.getShader().setUniform1f("pureColorThreshold",pureColorThreshold);

@@ -11,7 +11,7 @@
 <xrotate>0.36</xrotate>
 	<yrotate>-0.48</yrotate>
 <time_per_portrait>35.75</time_per_portrait>
-<LED1_bri>0.35</LED1_bri>
+<LED1_bri>0.2</LED1_bri>
 	<LED1_con>1.95</LED1_con>
 	<LED2_bri>0.2</LED2_bri>
 	<LED2_con>1.35</LED2_con>
@@ -32,7 +32,7 @@
 	<max_geom_extend_LED>0.81</max_geom_extend_LED>
 	<variance_effect_Facade>0.625</variance_effect_Facade>
 	<variance_effect_LED>0.625</variance_effect_LED>
-<max_extend_Facade>1</max_extend_Facade>
+<max_extend_Facade>0.955</max_extend_Facade>
 	<max_extend_LED>0.9325</max_extend_LED>
 	<variance_Facade>0.085</variance_Facade>
 	<variance_LED>1</variance_LED>
