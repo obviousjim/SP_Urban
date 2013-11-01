@@ -27,30 +27,40 @@ void testApp::setup(){
 	led1.rect = ofRectangle(280, 10, 760-280,298-10);
 	led1.debugLocation.x = led1.rect.getMaxX();
 	led1.debugLocation.y = led1.rect.getMaxY()-70;
+	led1.maxExtend = &maxExtendLED;
+	led1.varianceEffect = &varianceEffectLED;
+
 	
 	led2.name = "LED2";
 	led2.rect = ofRectangle(280, 310, 760-280,598-310);
 	led2.debugLocation.x = led2.rect.getMaxX();
 	led2.debugLocation.y = led2.rect.getY();
+	led2.maxExtend = &maxExtendLED;
+	led2.varianceEffect = &varianceEffectLED;
 	
 	leftFacade.name = "LEFT_FACADE";
 	leftFacade.rect = ofRectangle(36, 258,98-36,426-258);
 	leftFacade.mask.loadImage("facade/leftfacade.png");
 	leftFacade.debugLocation.x = leftFacade.rect.getX()-30;
 	leftFacade.debugLocation.y = leftFacade.rect.getMaxY()+15;
+	leftFacade.maxExtend = &maxExtendFacade;
+	leftFacade.varianceEffect = &varianceEffectFacade;
 	
 	centerFacade.name = "CENTER_FACADE";
 	centerFacade.rect = ofRectangle(98, 258,192-98,426-258);
 	centerFacade.mask.loadImage("facade/centerfacade.png");
 	centerFacade.debugLocation.x = centerFacade.rect.getX();
 	centerFacade.debugLocation.y = centerFacade.rect.getY()-60;
+	centerFacade.maxExtend = &maxExtendFacade;
+	centerFacade.varianceEffect = &varianceEffectFacade;
 	
 	rightFacade.name = "RIGHT_FACADE";
 	rightFacade.rect = ofRectangle(192, 258,251-192,426-258);
 	rightFacade.mask.loadImage("facade/rightfacade.png");
 	rightFacade.debugLocation.x = rightFacade.rect.getX()-50;
 	rightFacade.debugLocation.y = rightFacade.rect.getMaxY()+15;
-
+	rightFacade.maxExtend = &maxExtendFacade;
+	rightFacade.varianceEffect = &varianceEffectFacade;
 	
 	screens.push_back(&led1);
 	screens.push_back(&led2);
@@ -68,10 +78,14 @@ void testApp::setup(){
 
 	gui.add(headSphereRadius.setup("head radius", ofParameter<float>(), 0, 300));
 	gui.add(headEffectFalloff.setup("head falloff", ofParameter<float>(), 1, 1000));
-	gui.add(maxExtend.setup("max geom extend", ofParameter<float>(), .5, 1.0));
 	gui.add(extendThreshold.setup("geom extend thresh", ofParameter<float>(), 0, 300));
 	gui.add(extendFalloff.setup("geom extend falloff", ofParameter<float>(), 20, 500));
-
+	gui.add(maxExtendFacade.setup("max extend Facade", ofParameter<float>(), .5, 1.0));
+	gui.add(maxExtendLED.setup("max extend LED", ofParameter<float>(), .5, 1.0));
+	gui.add(varianceEffectFacade.setup("variance Facade", ofParameter<float>(), 0, 1.0));
+	gui.add(varianceEffectLED.setup("variance LED", ofParameter<float>(), 0, 1.0));
+	gui.add(pureColorThreshold.setup("pure color thresh", ofParameter<float>(), .2, 1.0));
+	
 	for(int i = 0; i < screens.size(); i++){
 		gui.add( screens[i]->brightness.setup(screens[i]->name + " bri",ofParameter<float>(), 0, 2) );
 		gui.add( screens[i]->contrast.setup(screens[i]->name + " con",ofParameter<float>(), 0, 3) );
@@ -254,21 +268,14 @@ void testApp::generateGeometry(){
 	
 	cout << "creating mesh with colstep " << colStep << " and vert step " << vertStep << endl;
 	
-//	ofFloatColor col;
 	int colorIndex = 0;
 	for(int c = 0; c < columns; c++){
 		//draw one column
-//		col = ofFloatColor::fromHsb(ofRandomuf(), 1.0, 1.0);
 		skipping = true;
 		for(int y = 0; y < 480; y += vertStep){
 			if(skipping){
 				skipping = ofRandomuf() > .7;
-				
 				colorIndex = ofRandom(3);
-				//col = ofFloatColor::fromHsb(ofRandomuf(), 1.0, 1.0);
-//				col = ofRandomuf() > .5 ?
-//					ofFloatColor(1.0,0.0,0.0) :
-//					(ofRandomuf() > .5  ? ofFloatColor(0.0,1.0,0.0) : ofFloatColor(0.0,0.0,1.0) );
 			}
 			else {
 				
@@ -307,7 +314,7 @@ void testApp::generateGeometry(){
 					nd.z = dv;
 					
 					//ofVec3f colvec = ofVec3f(col.r,col.g,col.b);
-					ofVec3f colvec = ofVec3f(colorIndex+.5,.5);
+					ofVec3f colvec = ofVec3f(colorIndex+.5,.5, ofRandomuf());
 					//vertices are actually colors here
 					mesh.addVertex(colvec);
 					mesh.addVertex(colvec);
@@ -345,7 +352,7 @@ void testApp::generateGeometry(){
 					mesh.addNormal(nd);
 				}
 				
-				skipping = ofRandomuf() > .95;
+				skipping = ofRandomuf() > .98;
 			}
 		}
 	}
@@ -362,9 +369,11 @@ void testApp::generateGeometry(){
 	}
 	varianceImage.update();
 	
-	speedVarianceImage.allocate(640, 1, OF_IMAGE_GRAYSCALE);
+	speedVarianceImage.allocate(640, 1, OF_IMAGE_COLOR);
 	for (int i = 0; i < speedVarianceImage.getWidth(); i++) {
-		speedVarianceImage.getPixels()[i] = ofMap(powf(ofRandomuf(),2.),1.0, 0.0, .3, 1.0);
+		speedVarianceImage.getPixels()[i*3] = ofMap(powf(ofRandomuf(),2.),0.0, 1.0, .1, 1.0);
+		speedVarianceImage.getPixels()[i*3+1] = ofRandomuf() > .5 ? 0.0 : 1.0;
+		speedVarianceImage.getPixels()[i*3+2] = 0.;
 	}
 	speedVarianceImage.update();
 	renderer.setSimplification( ofVec2f(vertStep,vertStep) );
@@ -414,7 +423,7 @@ void testApp::draw(){
 		}
 		
 		//PORTRAIT
-		ofEnableBlendMode(OF_BLENDMODE_ADD);
+		ofEnableBlendMode(OF_BLENDMODE_SCREEN);
 		ofSetColor(ofColor::white);
 		glDisable(GL_DEPTH_TEST);
 		for(int i = 0; i < screens.size(); i++){
@@ -424,7 +433,7 @@ void testApp::draw(){
 														 screens[i]->rect.height));
 			renderer.bindRenderer();
 			
-			renderer.getShader().setUniform1f("flowPosition", flowSpeed * ofGetElapsedTimef());
+			renderer.getShader().setUniform1f("flowPosition", -flowSpeed * ofGetElapsedTimef());
 			renderer.getShader().setUniform1f("brightness", screens[i]->brightness);
 			renderer.getShader().setUniform1f("contrast", screens[i]->contrast);
 			renderer.getShader().setUniform2f("headPosition",
@@ -434,14 +443,17 @@ void testApp::draw(){
 			
 			renderer.getShader().setUniform1f("headSphereRadius",headSphereRadius);
 			renderer.getShader().setUniform1f("headEffectFalloff",headEffectFalloff);
-
-			renderer.getShader().setUniform1f("maxExtend",maxExtend);
+			renderer.getShader().setUniform1f("varianceEffect",*screens[i]->varianceEffect);
+			
+			renderer.getShader().setUniform1f("maxExtend",*screens[i]->maxExtend);
 			renderer.getShader().setUniform1f("extendThreshold",extendThreshold);
 			renderer.getShader().setUniform1f("extendFalloff",extendFalloff);
+			renderer.getShader().setUniform1f("pureColorThreshold",pureColorThreshold);
 			
 			renderer.getShader().setUniformTexture("varianceTex",varianceImage, 3);
 			renderer.getShader().setUniformTexture("speedVarianceTex",speedVarianceImage, 4);
 			renderer.getShader().setUniformTexture("paletteTex", colorPalettes[currentPalette], 5);
+			
 			mesh.draw();
 
 			renderer.unbindRenderer();

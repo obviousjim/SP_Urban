@@ -34,17 +34,18 @@ uniform vec2 colorPP;
 uniform vec3 dK;
 uniform vec2 dP;
 
-
 uniform float flowPosition;
 
 uniform float maxExtend;
 uniform float extendThreshold;
 uniform float extendFalloff;
+uniform float varianceEffect;
 
 uniform vec2 headPosition;
 varying float headDistance;
 
 varying float positionValid;
+varying float pureColor;
 
 const float epsilon = 1e-6;
 
@@ -68,7 +69,7 @@ vec2 flowedPosition(vec2 basePos, vec2 center){
 float extendForPoint(vec2 point, vec2 center){
 //	return 1.0;
 	float headDistance2d = distance(headPosition, flowedPosition(point,center) );
-	return max(maxExtend - ( max(headDistance2d - extendThreshold, 0.) / extendFalloff), 0. ) * texture2DRect(varianceTex,center).r;
+	return max(maxExtend - ( max(headDistance2d - extendThreshold, 0.) / extendFalloff), 0. ) * mix(1.0, texture2DRect(varianceTex,center).r, varianceEffect);
 	//return texture2DRect(varianceTex,center).r;
 }
 
@@ -143,5 +144,7 @@ void main(void)
 	gl_TexCoord[0] = texCd;
     gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * pos;
     gl_FrontColor = texture2DRect(paletteTex,gl_Vertex.xy);
+	pureColor = mod(gl_Vertex.z+flowPosition*.002,1.0);
+	
 	gl_FrontColor.a = extend;
 }

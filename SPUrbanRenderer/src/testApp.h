@@ -65,13 +65,18 @@ class testApp : public ofBaseApp{
 	ofxFloatSlider timePerPortrait;
 	ofxFloatSlider flowSpeed;
 
-	ofxFloatSlider maxExtend;
+	ofxFloatSlider maxExtendLED;
+	ofxFloatSlider maxExtendFacade;
+	
 	ofxFloatSlider extendThreshold;
 	ofxFloatSlider extendFalloff;
 
 	ofxFloatSlider headSphereRadius;
 	ofxFloatSlider headEffectFalloff;
-
+	ofxFloatSlider varianceEffectLED;
+	ofxFloatSlider varianceEffectFacade;
+	ofxFloatSlider pureColorThreshold;
+	
 //    bool loadNewScene();
 //    bool loadDefaultScene();
     bool loadScene(string takeDirectory);

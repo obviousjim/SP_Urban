@@ -34,6 +34,7 @@ class PortraitScreen {
 	
 	ofCamera& getCameraRef();
 
+
 	bool automode;
 	
 	bool cameraTransition;
@@ -61,5 +62,9 @@ class PortraitScreen {
 	//set externally
 	float minChangeTime;
 	float changeTimeVariance;
+	
+	//custom geometry
+	ofxFloatSlider *maxExtend;
+	ofxFloatSlider *varianceEffect;
 	
 };
