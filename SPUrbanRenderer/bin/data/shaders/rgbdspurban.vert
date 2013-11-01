@@ -11,6 +11,8 @@ uniform vec2 scale;
 uniform sampler2DRect depthTex;
 uniform sampler2DRect varianceTex;
 uniform sampler2DRect speedVarianceTex;
+uniform sampler2DRect paletteTex;
+
 uniform vec2 principalPoint;
 uniform vec2 fov;
 uniform float farClip;
@@ -140,6 +142,6 @@ void main(void)
 	
 	gl_TexCoord[0] = texCd;
     gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * pos;
-    gl_FrontColor = gl_Vertex;
+    gl_FrontColor = texture2DRect(paletteTex,gl_Vertex.xy);
 	gl_FrontColor.a = extend;
 }

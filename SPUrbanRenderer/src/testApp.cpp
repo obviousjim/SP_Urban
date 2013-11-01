@@ -15,6 +15,7 @@ void testApp::setup(){
     ofBackground(25);
 	
     nextPortraitTime = 0;
+	currentPalette = 0;
 	
     //set up the game camera
     xrotate = 0;
@@ -109,7 +110,11 @@ void testApp::setup(){
 	switchPortrait();
 
 	loadHeadPositions();
+	loadPalettes();
 
+	
+	
+	
 	generateGeometry();
 //	ofToggleFullscreen();
 	
@@ -218,6 +223,25 @@ void testApp::loadHeadPositions(){
 	}
 }
 
+void testApp::loadPalettes(){
+	ofDirectory dir("palettes");
+	dir.allowExt("png");
+	dir.listDir();
+	for(int i = 0; i < dir.numFiles(); i++){
+		colorPalettes.push_back(ofImage());
+		colorPalettes[i].loadImage( dir.getPath(i) );
+	}
+}
+
+void testApp::selectPalette(){
+	int tries = 10;
+	int palette;
+	do {
+		palette = ofRandom(colorPalettes.size());
+	} while(palette == currentPalette && tries-- > 0);
+	currentPalette = palette;
+}
+
 void testApp::generateGeometry(){
 	
 	mesh.clear();
@@ -229,20 +253,26 @@ void testApp::generateGeometry(){
 	bool skipping = false;
 	
 	cout << "creating mesh with colstep " << colStep << " and vert step " << vertStep << endl;
-
+	
+//	ofFloatColor col;
+	int colorIndex = 0;
 	for(int c = 0; c < columns; c++){
 		//draw one column
-		
-		ofFloatColor col;
-		col = ofFloatColor::fromHsb(ofRandomuf(), 1.0, 1.0);		
+//		col = ofFloatColor::fromHsb(ofRandomuf(), 1.0, 1.0);
+		skipping = true;
 		for(int y = 0; y < 480; y += vertStep){
 			if(skipping){
 				skipping = ofRandomuf() > .7;
-				col = ofFloatColor::fromHsb(ofRandomuf(), 1.0, 1.0);
+				
+				colorIndex = ofRandom(3);
+				//col = ofFloatColor::fromHsb(ofRandomuf(), 1.0, 1.0);
+//				col = ofRandomuf() > .5 ?
+//					ofFloatColor(1.0,0.0,0.0) :
+//					(ofRandomuf() > .5  ? ofFloatColor(0.0,1.0,0.0) : ofFloatColor(0.0,0.0,1.0) );
 			}
 			else {
 				
-				for(int x = c * colStep; x < (c+1) * colStep ; x += vertStep ) {
+				for(int x = c * colStep; x < (c+1) * colStep; x += vertStep ) {
 					
 					//add  two triangles for each
 					ofIndexType startIndex = mesh.getNumIndices();
@@ -276,7 +306,8 @@ void testApp::generateGeometry(){
 					nc.z = cv;
 					nd.z = dv;
 					
-					ofVec3f colvec = ofVec3f(col.r,col.g,col.b);
+					//ofVec3f colvec = ofVec3f(col.r,col.g,col.b);
+					ofVec3f colvec = ofVec3f(colorIndex+.5,.5);
 					//vertices are actually colors here
 					mesh.addVertex(colvec);
 					mesh.addVertex(colvec);
@@ -353,6 +384,7 @@ void testApp::gotoPreviousPortrait(){
 
 //--------------------------------------------------------------
 void testApp::switchPortrait(){
+	
 	if(!loadScene( paths[currentPortraitIndex] )){
 		ofSystemAlertDialog("Couldn't load path " + paths[currentPortraitIndex] );
 		ofLogError("testApp::switchPortrait") << "Failed to load portrait " << paths[currentPortraitIndex];
@@ -362,7 +394,9 @@ void testApp::switchPortrait(){
 	player.getVideoPlayer()->play();
 	player.getVideoPlayer()->setSpeed(.5);
 	player.getVideoPlayer()->setVolume(0.);
-	
+
+	selectPalette();
+
 }
 
 //--------------------------------------------------------------
@@ -396,6 +430,7 @@ void testApp::draw(){
 			renderer.getShader().setUniform2f("headPosition",
 											  headPositions[player.getScene().name].x,
 											  headPositions[player.getScene().name].y);
+			renderer.getShader().setUniformMatrix4f("colors", colormatrix);
 			
 			renderer.getShader().setUniform1f("headSphereRadius",headSphereRadius);
 			renderer.getShader().setUniform1f("headEffectFalloff",headEffectFalloff);
@@ -406,7 +441,7 @@ void testApp::draw(){
 			
 			renderer.getShader().setUniformTexture("varianceTex",varianceImage, 3);
 			renderer.getShader().setUniformTexture("speedVarianceTex",speedVarianceImage, 4);
-
+			renderer.getShader().setUniformTexture("paletteTex", colorPalettes[currentPalette], 5);
 			mesh.draw();
 
 			renderer.unbindRenderer();
@@ -490,6 +525,9 @@ void testApp::keyPressed(int key){
 	}
 	if(key == OF_KEY_RIGHT){
 		gotoNextPortrait();
+	}
+	if(key == ']'){
+		selectPalette();
 	}
 }
 

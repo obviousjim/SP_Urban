@@ -78,6 +78,10 @@ class testApp : public ofBaseApp{
 
 	void saveHeadPositions();
 	void loadHeadPositions();
+	void loadPalettes();
+	void selectPalette();
+	int currentPalette;
+	
 	map<string, ofVec2f> headPositions;
 	
 	vector<PortraitScreen*> screens;
@@ -96,4 +100,7 @@ class testApp : public ofBaseApp{
 	
 	ofFbo fbo;
 	ofxSyphonServer syphonServer;
+	vector<ofImage> colorPalettes;
+	ofMatrix4x4 colormatrix;
+	
 };

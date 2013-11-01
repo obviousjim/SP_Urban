@@ -10,7 +10,7 @@
 <zclip>1362.5</zclip>
 <xrotate>0.36</xrotate>
 	<yrotate>-0.48</yrotate>
-<time_per_portrait>35</time_per_portrait>
+<time_per_portrait>35.75</time_per_portrait>
 <LED1_bri>0.25</LED1_bri>
 	<LED1_con>1.95</LED1_con>
 	<LED2_bri>0.11</LED2_bri>
@@ -22,9 +22,9 @@
 	<RIGHT_FACADE_bri>0.12</RIGHT_FACADE_bri>
 	<RIGHT_FACADE_con>1.755</RIGHT_FACADE_con>
 <flow>41</flow>
-<head_radius>229.5</head_radius>
-	<head_falloff>370.63</head_falloff>
-<max_geom_extend>0.785</max_geom_extend>
-	<geom_extend_thresh>190.5</geom_extend_thresh>
-	<geom_extend_falloff>437.6</geom_extend_falloff>
+<head_radius>126</head_radius>
+	<head_falloff>295.705</head_falloff>
+<max_geom_extend>0.7975</max_geom_extend>
+	<geom_extend_thresh>177</geom_extend_thresh>
+	<geom_extend_falloff>435.2</geom_extend_falloff>
 </tests>
