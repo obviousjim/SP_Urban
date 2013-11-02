@@ -56,6 +56,9 @@ class testApp : public ofBaseApp{
 	void switchPortrait();
 	float nextPortraitTime;
 	float portraitChangedTime;
+	bool hasComposeMode;
+	
+	ofVideoPlayer sound;
 	
 	ofRectangle depthRect;
 	
@@ -84,9 +87,6 @@ class testApp : public ofBaseApp{
 	ofxFloatSlider facadeColorCorrectB;
 	
 	float pureColorFlickerPos;
-	
-//    bool loadNewScene();
-//    bool loadDefaultScene();
     bool loadScene(string takeDirectory);
 
 	void saveHeadPositions();
@@ -114,6 +114,7 @@ class testApp : public ofBaseApp{
 	ofFbo fbo;
 	ofxSyphonServer syphonServer;
 	vector<ofImage> colorPalettes;
+	vector<string> paletteNames;
 	ofMatrix4x4 colormatrix;
 	
 };

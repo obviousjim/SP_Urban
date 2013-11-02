@@ -111,16 +111,6 @@ void testApp::setup(){
 	pathxml.popTag();
 	
 	depthRect = ofRectangle(10 ,10,160,120);
-	
-//	if(leftmask.getWidth() != leftFacade.getWidth() || leftmask.getHeight() != leftFacade.getHeight()){
-//		ofLogError("setup") << "left mask dimensions do not match!" << leftmask.getWidth() << " " << leftFacade.getWidth() << " " << leftmask.getHeight() << " " << leftFacade.getHeight();
-//	}
-//	if(centermask.getWidth() != centerFacade.getWidth() || centermask.getHeight() != centerFacade.getHeight()){
-//		ofLogError("setup") << "center mask dimensions do not match!" << centermask.getWidth() << " " << centerFacade.getWidth() << " " << centermask.getHeight() << " " << centerFacade.getHeight();
-//	}
-//	if(rightmask.getWidth() != rightFacade.getWidth() || rightmask.getHeight() != rightFacade.getHeight()){
-//		ofLogError("setup") << "center mask dimensions do not match!" << rightmask.getWidth() << " " << rightFacade.getWidth() << " " << rightmask.getHeight() << " " << rightFacade.getHeight();
-//	}
 
 	fbo.allocate(1024, 768, GL_RGB, 4);
 	
@@ -131,12 +121,7 @@ void testApp::setup(){
 
 	loadHeadPositions();
 	loadPalettes();
-
-	
-	
-	
 	generateGeometry();
-//	ofToggleFullscreen();
 	
 }
 
@@ -176,19 +161,20 @@ void testApp::update(){
         renderer.update();
     }
 	
+	hasComposeMode = false;
+	for(int i = 0; i < screens.size(); i++){
+		hasComposeMode |= !screens[i]->automode;
+	}
+	
 	if(ofGetElapsedTimef() > nextPortraitTime){
-		bool hasComposeMode = false;
-		for(int i = 0; i < screens.size(); i++){
-			hasComposeMode |= !screens[i]->automode;
-		}
 		
 		if(!hasComposeMode){
 			gotoNextPortrait();
 			portraitChangedTime = ofGetElapsedTimef();
 			nextPortraitTime = portraitChangedTime + timePerPortrait;
-//			for(int i = 0; i < screens.size(); i++){
-//				screens[i]->nextPose();
-//			}
+			for(int i = 0; i < screens.size(); i++){
+				screens[i]->nextPose();
+			}
 		}
 	}
 
@@ -249,6 +235,7 @@ void testApp::loadPalettes(){
 	dir.allowExt("png");
 	dir.listDir();
 	for(int i = 0; i < dir.numFiles(); i++){
+		paletteNames.push_back(ofFilePath::removeExt( dir.getName(i) ));
 		colorPalettes.push_back(ofImage());
 		colorPalettes[i].loadImage( dir.getPath(i) );
 	}
@@ -267,7 +254,7 @@ void testApp::generateGeometry(){
 	
 	mesh.clear();
 
-	int columns = 40;
+	int columns = 32;
 	int vertsPerColumn = 3;
 	float colStep = 640. / columns;
 	float vertStep = colStep / (vertsPerColumn+1);
@@ -411,6 +398,11 @@ void testApp::switchPortrait(){
 	player.getVideoPlayer()->setSpeed(.5);
 	player.getVideoPlayer()->setVolume(0.);
 
+	sound.stop();
+	cout << "Loading " << player.getScene().mediaFolder + "/sound.mov" << endl;
+	sound.loadMovie(player.getScene().mediaFolder + "/sound.mov");
+	sound.play();
+	
 	selectPalette();
 
 }
@@ -452,9 +444,11 @@ void testApp::draw(){
 			renderer.getShader().setUniform1f("headEffectFalloff",headEffectFalloff);
 			renderer.getShader().setUniform1f("varianceEffect",*screens[i]->varianceEffect);
 			
-			renderer.getShader().setUniform1f("maxExtend",*screens[i]->maxExtend
-											  * ofMap( nextPortraitTime- ofGetElapsedTimef(), .5, 0, 1.0, 0.0, true)
-											  * ofMap( ofGetElapsedTimef() - portraitChangedTime, 0, .5, .0, 1.0, true));
+			float attenuate = !hasComposeMode ?
+				ofMap( nextPortraitTime - ofGetElapsedTimef(), .5, 0, 1.0, 0.0, true)
+				* ofMap( ofGetElapsedTimef() - portraitChangedTime, 0, .5, .0, 1.0, true) : 1.0;
+
+			renderer.getShader().setUniform1f("maxExtend",*screens[i]->maxExtend * attenuate);
 
 			renderer.getShader().setUniform1f("extendThreshold",extendThreshold);
 			renderer.getShader().setUniform1f("extendFalloff",extendFalloff);
@@ -497,7 +491,8 @@ void testApp::draw(){
 
 	ofDrawBitmapString("name " + player.getScene().name +
 					   "\nfps " + ofToString(ofGetFrameRate()) +
-					   "\ntime til next " + ofToString(nextPortraitTime - ofGetElapsedTimef(),2),
+					   "\ntime til next " + ofToString(nextPortraitTime - ofGetElapsedTimef(),2) +
+					   "\npalette " + paletteNames[currentPalette],
 					   led1.rect.getMaxX(), led1.rect.y);
 	
 	ofEnableAlphaBlending();

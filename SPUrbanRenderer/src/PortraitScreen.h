@@ -46,7 +46,6 @@ class PortraitScreen {
 	
 	void setup();
 	void update();
-	void draw();
 	
 	void save();
 	void load();

@@ -209,7 +209,6 @@ void PortraitScreen::updateCameraPose(){
 void PortraitScreen::updateCameraSwoop(){
 	ofxEasingQuad eq;
 	float alpha = ofxTween::map(ofGetElapsedTimef(), transitionStart, transitionEnd, 0, 1.0, true, eq, ofxTween::easeInOut);
-//	if(name == "LED1") cout << "	transition cur: " << ofGetElapsedTimef() << " start " << transitionStart << " end " << transitionEnd << " percent " << alpha << endl;
 
 	normalCam.setPosition( beginning.getPosition().getInterpolated(target.getPosition(), alpha) );
 	ofQuaternion q;
@@ -217,13 +216,7 @@ void PortraitScreen::updateCameraSwoop(){
 	normalCam.setOrientation( q );
 	if(alpha >= 1.){
 		cameraTransition = false;
-		//if(name == "LED1") cout << "exiting transition" << endl;
 	}
-	
-}
-
-void PortraitScreen::draw(){
-
 }
 
 void PortraitScreen::drawDebug(){
