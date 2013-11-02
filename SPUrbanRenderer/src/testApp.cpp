@@ -18,6 +18,7 @@ void testApp::setup(){
 	currentPalette = 0;
 	pureColorFlickerPos = 0;
 	
+	hasSound = false;
     //set up the game camera
     xrotate = 0;
     yrotate = 0;
@@ -161,12 +162,16 @@ void testApp::update(){
         renderer.update();
     }
 	
+	if(hasSound){
+		sound.update();
+	}
+	
 	hasComposeMode = false;
 	for(int i = 0; i < screens.size(); i++){
 		hasComposeMode |= !screens[i]->automode;
 	}
 	
-	if(ofGetElapsedTimef() > nextPortraitTime){
+	if( (!hasSound && ofGetElapsedTimef() > nextPortraitTime) || (hasSound && !sound.isPlaying()) ){
 		
 		if(!hasComposeMode){
 			gotoNextPortrait();
@@ -400,8 +405,12 @@ void testApp::switchPortrait(){
 
 	sound.stop();
 	cout << "Loading " << player.getScene().mediaFolder + "/sound.mov" << endl;
-	sound.loadMovie(player.getScene().mediaFolder + "/sound.mov");
-	sound.play();
+	hasSound = sound.loadMovie(player.getScene().mediaFolder + "/sound.mov");
+	if(hasSound){
+		sound.setVolume(1.5);
+		sound.setLoopState(OF_LOOP_NONE);
+		sound.play();
+	}
 	
 	selectPalette();
 
@@ -443,10 +452,21 @@ void testApp::draw(){
 			renderer.getShader().setUniform1f("headSphereRadius",headSphereRadius);
 			renderer.getShader().setUniform1f("headEffectFalloff",headEffectFalloff);
 			renderer.getShader().setUniform1f("varianceEffect",*screens[i]->varianceEffect);
-			
-			float attenuate = !hasComposeMode ?
-				ofMap( nextPortraitTime - ofGetElapsedTimef(), .5, 0, 1.0, 0.0, true)
-				* ofMap( ofGetElapsedTimef() - portraitChangedTime, 0, .5, .0, 1.0, true) : 1.0;
+
+			float attenuate = 1;
+			if(!hasComposeMode){
+				if(hasSound){
+					attenuate = ofMap( sound.getDuration() - sound.getPosition()*sound.getDuration(), .5, 0, 1.0, 0.0, true)
+							  * ofMap( ofGetElapsedTimef() - portraitChangedTime, 0, .5, .0, 1.0, true);
+					
+				}
+				else{
+					attenuate = ofMap( nextPortraitTime - ofGetElapsedTimef(), .5, 0, 1.0, 0.0, true)
+							  * ofMap( ofGetElapsedTimef() - portraitChangedTime, 0, .5, .0, 1.0, true);
+				}
+
+			}
+
 
 			renderer.getShader().setUniform1f("maxExtend",*screens[i]->maxExtend * attenuate);
 

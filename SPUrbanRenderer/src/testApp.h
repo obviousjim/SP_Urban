@@ -97,6 +97,8 @@ class testApp : public ofBaseApp{
 	
 	map<string, ofVec2f> headPositions;
 	
+	bool hasSound;
+	
 	vector<PortraitScreen*> screens;
 	PortraitScreen* highlightScreen;
 	PortraitScreen led1;

@@ -12,7 +12,7 @@
 
 PortraitScreen::PortraitScreen(){
 	automode = true;
-	minChangeTime = 5;
+	minChangeTime = 7;
 	changeTimeVariance = 4;
 	nextChangeTime = 0;
 	currentCameraSample = -1;
