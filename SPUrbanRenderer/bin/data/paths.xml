@@ -1,4 +1,5 @@
 <paths>
+	<path>Portraits/ANAISA</path>	
 	<path>Portraits/PABLO</path>
 	<!--<path>Portraits/TANYA</path>-->
 	<path>Portraits/RUNE</path>
@@ -8,6 +9,6 @@
 	<!--<path>Portraits/MARILIA</path>-->
 	<path>Portraits/SERGIO</path>
 	<path>Portraits/KRIS</path>	
-	<path>Portraits/ANAISA</path>	
+
 	<path>Portraits/REZA</path>	
 </paths>

@@ -17,6 +17,7 @@ void testApp::setup(){
     nextPortraitTime = 0;
 	currentPalette = 0;
 	pureColorFlickerPos = 0;
+	hasSubtitles = false;
 	
 	hasSound = false;
     //set up the game camera
@@ -117,6 +118,8 @@ void testApp::setup(){
 	
 	highlightScreen = NULL;
 	
+	titles.setup("subtitles/AxisStd-Regular.otf", 9);
+	
 	currentPortraitIndex = 0;
 	switchPortrait();
 
@@ -164,7 +167,13 @@ void testApp::update(){
 	
 	if(hasSound){
 		sound.update();
+		if(hasSubtitles){
+			titles.setTimeInSeconds(sound.getPosition()*sound.getDuration());
+//			cout << "setting titles " << endl;
+//			if(titles.getCurrentUnit() != NULL) cout << "Current title is " << titles.getCurrentUnit()->getLines()[0] << endl;
+		}
 	}
+	
 	
 	hasComposeMode = false;
 	for(int i = 0; i < screens.size(); i++){
@@ -410,6 +419,12 @@ void testApp::switchPortrait(){
 		sound.setVolume(1.5);
 		sound.setLoopState(OF_LOOP_NONE);
 		sound.play();
+		
+		string subtitlePath = "subtitles/" +player.getScene().name + "_e.srt";
+		hasSubtitles = false;
+		if(ofFile(subtitlePath).exists()){
+			hasSubtitles = titles.load(subtitlePath);
+		}
 	}
 	
 	selectPalette();
@@ -488,10 +503,26 @@ void testApp::draw(){
 												  facadeColorCorrectG,
 												  facadeColorCorrectB,0);
 			}
+			
 			mesh.draw();
-
+			
+			
 			renderer.unbindRenderer();
 			screens[i]->getCameraRef().end();
+			
+			if(hasSubtitles){
+				ofPushStyle();
+				
+				ofSetColor(0);
+				titles.draw(led1.rect.getCenter().x , led1.rect.getMaxY()-28);
+				titles.draw(led2.rect.getCenter().x , led2.rect.getMaxY()-28);
+
+				ofSetColor(255);
+				titles.draw(led1.rect.getCenter().x+2, led1.rect.getMaxY()-30);
+				titles.draw(led2.rect.getCenter().x+2, led2.rect.getMaxY()-30);
+				
+				ofPopStyle();
+			}
 		}
 
 		//MASK

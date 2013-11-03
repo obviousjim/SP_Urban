@@ -21,7 +21,7 @@
 #include "ofxRGBDGPURenderer.h"
 #include "ofxRGBDCPURenderer.h"
 #include "ofxSyphon.h"
-
+#include "ofxSubtitles.h"
 #include "PortraitScreen.h"
 
 #include "ofxGui.h"
@@ -58,7 +58,11 @@ class testApp : public ofBaseApp{
 	float portraitChangedTime;
 	bool hasComposeMode;
 	
+	bool hasSound;
 	ofVideoPlayer sound;
+	bool hasSubtitles;
+	ofxSubtitles titles;
+
 	
 	ofRectangle depthRect;
 	
@@ -97,7 +101,7 @@ class testApp : public ofBaseApp{
 	
 	map<string, ofVec2f> headPositions;
 	
-	bool hasSound;
+
 	
 	vector<PortraitScreen*> screens;
 	PortraitScreen* highlightScreen;
