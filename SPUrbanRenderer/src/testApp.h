@@ -100,8 +100,8 @@ class testApp : public ofBaseApp{
 	int currentPalette;
 	
 	map<string, ofVec2f> headPositions;
+	bool easterEggPlayed;
 	
-
 	
 	vector<PortraitScreen*> screens;
 	PortraitScreen* highlightScreen;

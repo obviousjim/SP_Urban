@@ -1,14 +1,17 @@
-<paths>
-	<path>Portraits/ANAISA</path>	
+<paths>	
 	<path>Portraits/PABLO</path>
-	<!--<path>Portraits/TANYA</path>-->
-	<path>Portraits/RUNE</path>
-	<!--<path>Portraits/PALOMA</path>	-->
-	<!--<path>Portraits/MATEUS</path>	-->
+	<path>Portraits/MATEUS</path>
+	<path>Portraits/PALOMA</path>
 	<path>Portraits/VIGAS</path>
-	<!--<path>Portraits/MARILIA</path>-->
+	<path>Portraits/ANAISA</path>	
 	<path>Portraits/SERGIO</path>
-	<path>Portraits/KRIS</path>	
-
+	<path>Portraits/MARILIA</path>
 	<path>Portraits/REZA</path>	
+	<path>Portraits/KRIS</path>	
+	<path>Portraits/RUNE</path>
+	<path>Portraits/TANYA</path>
 </paths>
+
+
+<!--	<path>Portraits/JAMES</path> -->
+<!--	<path>Portraits/CHANTAL</path> -->

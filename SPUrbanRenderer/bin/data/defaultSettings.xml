@@ -7,9 +7,9 @@
 <tests/>
 <scanlines>0</scanlines>
 <debug>0</debug>
-<zclip>1362.5</zclip>
+<zclip>1220</zclip>
 <xrotate>0.24</xrotate>
-	<yrotate>-0.28</yrotate>
+	<yrotate>-0.12</yrotate>
 <time_per_portrait>35.75</time_per_portrait>
 <LED1_bri>0.31</LED1_bri>
 	<LED1_con>1.95</LED1_con>
@@ -39,7 +39,7 @@
 <pure_color_thres>0.964</pure_color_thres>
 <pure_color_thresh>0.972</pure_color_thresh>
 <pure_color_flicker>0.05275</pure_color_flicker>
-<correct_r>0.04</correct_r>
+<correct_r>0.06</correct_r>
 	<correct_g>-0.04</correct_g>
-	<correct_b>0.046</correct_b>
+	<correct_b>-0.046</correct_b>
 </tests>

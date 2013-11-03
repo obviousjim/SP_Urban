@@ -18,6 +18,7 @@ void testApp::setup(){
 	currentPalette = 0;
 	pureColorFlickerPos = 0;
 	hasSubtitles = false;
+	easterEggPlayed = false;
 	
 	hasSound = false;
     //set up the game camera
@@ -101,7 +102,8 @@ void testApp::setup(){
 	}
 	
 	gui.loadFromFile("defaultSettings.xml");
-	gui.setPosition(ofPoint(led2.rect.getMaxX() + 10, led2.rect.getMinY() + 75));
+	gui.setPosition(ofPoint(led2.rect.getMaxX() + 10,
+							led2.rect.getMinY() + 75));
 					
 	ofxXmlSettings pathxml;
 	pathxml.load("paths.xml");
@@ -181,11 +183,9 @@ void testApp::update(){
 	}
 	
 	if( (!hasSound && ofGetElapsedTimef() > nextPortraitTime) || (hasSound && !sound.isPlaying()) ){
-		
+
 		if(!hasComposeMode){
 			gotoNextPortrait();
-			portraitChangedTime = ofGetElapsedTimef();
-			nextPortraitTime = portraitChangedTime + timePerPortrait;
 			for(int i = 0; i < screens.size(); i++){
 				screens[i]->nextPose();
 			}
@@ -401,21 +401,34 @@ void testApp::gotoPreviousPortrait(){
 
 //--------------------------------------------------------------
 void testApp::switchPortrait(){
-	
-	if(!loadScene( paths[currentPortraitIndex] )){
-		ofSystemAlertDialog("Couldn't load path " + paths[currentPortraitIndex] );
-		ofLogError("testApp::switchPortrait") << "Failed to load portrait " << paths[currentPortraitIndex];
-		return;
+
+	string sceneToLoad;
+	if(currentPortraitIndex > 1 && !easterEggPlayed && ofRandomuf() > .99){
+		easterEggPlayed = true;
+		cout << "LOADING EASTER EGG HEHEHEHE" << endl;
+		sceneToLoad = ofRandomuf() > .5 ? "Portraits/CHANTAL" : "Portraits/JAMES";
+	}
+	else{
+		sceneToLoad = paths[currentPortraitIndex];
 	}
 	
+	if(!loadScene( sceneToLoad )){
+		ofSystemAlertDialog("Couldn't load path " + sceneToLoad );
+		ofLogError("testApp::switchPortrait") << "Failed to load portrait " << sceneToLoad;
+		return;
+	}
+
 	player.getVideoPlayer()->play();
 	player.getVideoPlayer()->setSpeed(.5);
 	player.getVideoPlayer()->setVolume(0.);
 
 	sound.stop();
-	cout << "Loading " << player.getScene().mediaFolder + "/sound.mov" << endl;
-	hasSound = sound.loadMovie(player.getScene().mediaFolder + "/sound.mov");
+
+	string soundPath = player.getScene().mediaFolder + "/" + player.getScene().name + ".aif";
+	hasSound = sound.loadMovie(soundPath);
+	
 	if(hasSound){
+		cout << "loaded sound " << soundPath << endl;
 		sound.setLoopState(OF_LOOP_NONE);
 		sound.play();
 		
@@ -427,6 +440,9 @@ void testApp::switchPortrait(){
 	}
 	
 	selectPalette();
+
+	portraitChangedTime = ofGetElapsedTimef();
+	nextPortraitTime = portraitChangedTime + timePerPortrait;
 
 }
 
