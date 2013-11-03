@@ -416,11 +416,10 @@ void testApp::switchPortrait(){
 	cout << "Loading " << player.getScene().mediaFolder + "/sound.mov" << endl;
 	hasSound = sound.loadMovie(player.getScene().mediaFolder + "/sound.mov");
 	if(hasSound){
-		sound.setVolume(1.5);
 		sound.setLoopState(OF_LOOP_NONE);
 		sound.play();
 		
-		string subtitlePath = "subtitles/" +player.getScene().name + "_e.srt";
+		string subtitlePath = "subtitles/" +player.getScene().name + "_p.srt";
 		hasSubtitles = false;
 		if(ofFile(subtitlePath).exists()){
 			hasSubtitles = titles.load(subtitlePath);
@@ -512,6 +511,11 @@ void testApp::draw(){
 			
 			if(hasSubtitles){
 				ofPushStyle();
+				
+				ofEnableAlphaBlending();
+				ofSetColor(0, 30);
+				ofRect(led1.rect.x,led1.rect.getMaxY()-50,led1.rect.width,50);
+				ofRect(led2.rect.x,led2.rect.getMaxY()-50,led2.rect.width,50);
 				
 				ofSetColor(0);
 				titles.draw(led1.rect.getCenter().x , led1.rect.getMaxY()-28);
