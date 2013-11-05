@@ -1,0 +1,84 @@
+1
+00:00:00:0 --> 00:00:03:19
+I’m going back to kind of the engineer who was in control at one time, making our 
+Eu estou falando dos engenheiros que estavam no controle em um dado momento, dos que produziam nossos
+
+2
+00:00:03:19 --> 00:00:06:12
+computers and interfaces, and these things, 
+computadores e interfaces, e coisas deste tipo, 
+
+3
+0:00:06:12 --> 00:00:11:07
+so at that time we didn’t have a lot of access
+então naquele momento não tínhamos muito acesso,
+
+4
+00:00:11:07 --> 00:00:15:21
+to how our interfaces were built, how, you know, we are actually 
+a informações relativas a como as interfaces eram construídas, sabe, agora
+
+5
+00:00:15:21 --> 00:00:18:10
+supposed to interact with these machines. 
+devemos interagir com essas máquinas.
+
+6
+00:00:18:10 --> 00:00:23:03
+Where we are at now something even within the last three years,
+Desde os últimos anos chegamos a um momento 
+
+7
+00:00:23:03 --> 00:00:27:09
+more more technology became available. We are 
+onde mais e mais tecnologia está disponível. Hoje temos acesso 
+
+8
+00:00:27:09 --> 00:00:30:02
+able to grasp some of these technologies
+a muita tecnologia, 
+
+9
+00:00:30:02 --> 00:00:32:05
+that people weren’t able to before. And I
+coisa impensável no passado. E eu, bom,  
+
+10
+00:00:32:05 --> 00:00:38:03
+think myself as a, coming from an artistic background there was a a very big leap
+vindo de um background artístico, houve um hiato para eu poder entender de fato
+
+11
+00:00:38:03 --> 00:00:41:03
+into understanding how technologies worked, 
+como a tecnologia funciona, 
+
+12
+00:00:41:03 --> 00:00:44:00
+and it was sort of, I have to say that it was because of this movement
+e foi como se…devo dizer que foi por conta deste movimento em busca do conhecimento. 
+
+13
+00:00:44:00 --> 00:00:47:23
+and in that level of access might relate to where our
+O elevado nível de acesso a informações dirige nossos interesses,
+
+14
+00:00:47:23 --> 00:00:50:19
+interests are what people can do within a  city. 
+principalmente em uma cidade. 
+
+15
+00:00:50:19 --> 00:00:53:02
+So maybe a dream scape would be, you know, 
+Então um futuro perfeito seria se por exemplo houvessem
+
+16
+00:00:53:02 --> 00:00:58:02
+some arduinos hooked up in the street, or, or, there are some sensors that, 
+arduinos presos nos postes públicos, ou então sensores para que 
+
+17
+00:00:58:02 --> 00:01:01:17
+you know, people can play with, and maybe it's without limits.
+as pessoas pudessem brincar sem que houvesse limite.

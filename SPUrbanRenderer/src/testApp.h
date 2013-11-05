@@ -58,8 +58,12 @@ class testApp : public ofBaseApp{
 	float portraitChangedTime;
 	bool hasComposeMode;
 	
+	bool playing;
+	
 	bool hasSound;
 	ofVideoPlayer sound;
+	ofSoundPlayer music;
+	
 	bool hasSubtitles;
 	ofxSubtitles titles;
 
@@ -101,7 +105,7 @@ class testApp : public ofBaseApp{
 	
 	map<string, ofVec2f> headPositions;
 	bool easterEggPlayed;
-	
+	bool soundPlaying;
 	
 	vector<PortraitScreen*> screens;
 	PortraitScreen* highlightScreen;

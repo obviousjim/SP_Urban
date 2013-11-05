@@ -11,6 +11,7 @@
 //--------------------------------------------------------------
 void testApp::setup(){
     
+	srand(ofGetSeconds());
     ofSetFrameRate(60);
     ofBackground(25);
 	
@@ -19,6 +20,8 @@ void testApp::setup(){
 	pureColorFlickerPos = 0;
 	hasSubtitles = false;
 	easterEggPlayed = false;
+	soundPlaying = true;
+	playing = false;
 	
 	hasSound = false;
     //set up the game camera
@@ -34,7 +37,6 @@ void testApp::setup(){
 	led1.maxExtend = &maxExtendLED;
 	led1.varianceEffect = &varianceEffectLED;
 
-	
 	led2.name = "LED2";
 	led2.rect = ofRectangle(280, 310, 760-280,598-310);
 	led2.debugLocation.x = led2.rect.getMaxX();
@@ -114,7 +116,7 @@ void testApp::setup(){
 	}
 	pathxml.popTag();
 	
-	depthRect = ofRectangle(10 ,10,160,120);
+	depthRect = ofRectangle(10,10,160,120);
 
 	fbo.allocate(1024, 768, GL_RGB, 4);
 	
@@ -123,12 +125,18 @@ void testApp::setup(){
 	titles.setup("subtitles/AxisStd-Regular.otf", 9);
 	
 	currentPortraitIndex = 0;
-	switchPortrait();
 
 	loadHeadPositions();
 	loadPalettes();
 	generateGeometry();
 	
+	switchPortrait();
+	
+	music.loadSound("music/MASS.mp3");
+	music.setLoop(true);
+	music.play();
+	music.setVolume(.65);
+
 }
 
 //--------------------------------------------------------------
@@ -176,6 +184,7 @@ void testApp::update(){
 		}
 	}
 	
+//	music.update();
 	
 	hasComposeMode = false;
 	for(int i = 0; i < screens.size(); i++){
@@ -403,7 +412,7 @@ void testApp::gotoPreviousPortrait(){
 void testApp::switchPortrait(){
 
 	string sceneToLoad;
-	if(currentPortraitIndex > 1 && !easterEggPlayed && ofRandomuf() > .99){
+	if(currentPortraitIndex > 1 &&	!easterEggPlayed && ofRandomuf() > .99){
 		easterEggPlayed = true;
 		cout << "LOADING EASTER EGG HEHEHEHE" << endl;
 		sceneToLoad = ofRandomuf() > .5 ? "Portraits/CHANTAL" : "Portraits/JAMES";
@@ -424,7 +433,7 @@ void testApp::switchPortrait(){
 
 	sound.stop();
 
-	string soundPath = player.getScene().mediaFolder + "/" + player.getScene().name + ".aif";
+	string soundPath = "Portraits/_SOUND/" + ofToLower(player.getScene().name) + ".aif";
 	hasSound = sound.loadMovie(soundPath);
 	
 	if(hasSound){
@@ -605,6 +614,7 @@ void testApp::keyPressed(int key){
     if(key == ' '){
         player.togglePlay();
     }
+	
 	if(key == 'R'){
 		renderer.reloadShader();
 	}
@@ -626,6 +636,18 @@ void testApp::keyPressed(int key){
 	}
 	if(key == ']'){
 		selectPalette();
+	}
+	if(key == 'S'){
+		
+		if(soundPlaying){
+			sound.setVolume(0.0);
+			music.setVolume(0.0);
+		}
+		else{
+			sound.setVolume(1.0);
+			music.setVolume(1.0);
+		}
+		soundPlaying = !soundPlaying;
 	}
 }
 
