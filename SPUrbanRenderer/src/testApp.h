@@ -59,6 +59,7 @@ class testApp : public ofBaseApp{
 	bool hasComposeMode;
 	
 	bool playing;
+	bool shouldStartPlaying;
 	
 	bool hasSound;
 	ofVideoPlayer sound;

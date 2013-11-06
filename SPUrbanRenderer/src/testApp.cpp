@@ -12,6 +12,7 @@
 void testApp::setup(){
     
 	srand(ofGetSeconds());
+	cout << "first randoms " << ofRandomuf() << " " << ofRandomuf() << " " << ofRandomuf() << endl;
     ofSetFrameRate(60);
     ofBackground(25);
 	
@@ -22,6 +23,7 @@ void testApp::setup(){
 	easterEggPlayed = false;
 	soundPlaying = true;
 	playing = false;
+	shouldStartPlaying = false;
 	
 	hasSound = false;
     //set up the game camera
@@ -130,12 +132,11 @@ void testApp::setup(){
 	loadPalettes();
 	generateGeometry();
 	
-	switchPortrait();
-	
-	music.loadSound("music/MASS.mp3");
-	music.setLoop(true);
-	music.play();
-	music.setVolume(.65);
+//	switchPortrait();
+//	music.loadSound("music/MASS.mp3");
+//	music.setLoop(true);
+//	music.play();
+//	music.setVolume(.65);
 
 }
 
@@ -163,6 +164,18 @@ bool testApp::loadScene(string takeDirectory){
 //--------------------------------------------------------------
 void testApp::update(){
 	
+	if(shouldStartPlaying){
+		switchPortrait();
+		music.loadSound("music/MASS.mp3");
+		music.setLoop(true);
+		music.play();
+		music.setVolume(.65);
+		shouldStartPlaying = false;
+		playing = true;
+	}
+	
+	if(!playing) return;
+	
     //copy any GUI changes into the mesh
     renderer.colorMatrixRotate.x = xrotate;
 	renderer.colorMatrixRotate.y = yrotate;
@@ -183,8 +196,6 @@ void testApp::update(){
 //			if(titles.getCurrentUnit() != NULL) cout << "Current title is " << titles.getCurrentUnit()->getLines()[0] << endl;
 		}
 	}
-	
-//	music.update();
 	
 	hasComposeMode = false;
 	for(int i = 0; i < screens.size(); i++){
@@ -412,7 +423,7 @@ void testApp::gotoPreviousPortrait(){
 void testApp::switchPortrait(){
 
 	string sceneToLoad;
-	if(currentPortraitIndex > 1 &&	!easterEggPlayed && ofRandomuf() > .99){
+	if(currentPortraitIndex > 1 && !easterEggPlayed && ofRandomuf() > .99){
 		easterEggPlayed = true;
 		cout << "LOADING EASTER EGG HEHEHEHE" << endl;
 		sceneToLoad = ofRandomuf() > .5 ? "Portraits/CHANTAL" : "Portraits/JAMES";
@@ -457,6 +468,11 @@ void testApp::switchPortrait(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
+	
+	if(!playing){
+		ofDrawBitmapString("WAITING TO PLAY: hit space bar to begin", ofGetWidth()*.4, ofGetHeight()/2);
+	}
+	
     if(player.isLoaded()){
         
 		fbo.begin();
@@ -612,9 +628,11 @@ void testApp::draw(){
 void testApp::keyPressed(int key){
 	
     if(key == ' '){
-        player.togglePlay();
-    }
-	
+//        player.togglePlay();
+		if(!playing){
+			shouldStartPlaying = true;
+		}
+    }	
 	if(key == 'R'){
 		renderer.reloadShader();
 	}
