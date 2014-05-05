@@ -60,6 +60,7 @@ class testApp : public ofBaseApp{
 	
 	bool playing;
 	bool shouldStartPlaying;
+	bool shouldStopPlaying;
 	
 	bool hasSound;
 	ofVideoPlayer sound;
@@ -116,7 +117,7 @@ class testApp : public ofBaseApp{
 	PortraitScreen leftFacade;
 	PortraitScreen centerFacade;
 	PortraitScreen rightFacade;
-	
+
 	ofVboMesh mesh;
 	ofVboMesh pointfill;
 	ofFloatImage varianceImage;
@@ -127,5 +128,6 @@ class testApp : public ofBaseApp{
 	vector<ofImage> colorPalettes;
 	vector<string> paletteNames;
 	ofMatrix4x4 colormatrix;
+	bool playFullScreen;
 	
 };

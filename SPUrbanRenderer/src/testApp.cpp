@@ -24,8 +24,10 @@ void testApp::setup(){
 	soundPlaying = true;
 	playing = false;
 	shouldStartPlaying = false;
-	
+	shouldStopPlaying = false;
+	playFullScreen = false;
 	hasSound = false;
+	
     //set up the game camera
     xrotate = 0;
     yrotate = 0;
@@ -70,11 +72,11 @@ void testApp::setup(){
 	rightFacade.maxExtend = &maxExtendFacade;
 	rightFacade.varianceEffect = &varianceEffectFacade;
 	
-	screens.push_back(&led1);
-	screens.push_back(&led2);
-	screens.push_back(&leftFacade);
-	screens.push_back(&centerFacade);
-	screens.push_back(&rightFacade);
+	screens.push_back(&led1); // 0
+	screens.push_back(&led2); // 1
+	screens.push_back(&leftFacade);		// 2
+	screens.push_back(&centerFacade);	// 3
+	screens.push_back(&rightFacade);	// 4
 
 	gui.setup("tests");
     
@@ -421,6 +423,7 @@ void testApp::gotoPreviousPortrait(){
 
 //--------------------------------------------------------------
 void testApp::switchPortrait(){
+	sound.stop();
 
 	string sceneToLoad;
 	if(currentPortraitIndex > 1 && !easterEggPlayed && ofRandomuf() > .99){
@@ -430,6 +433,15 @@ void testApp::switchPortrait(){
 	}
 	else{
 		sceneToLoad = paths[currentPortraitIndex];
+
+	}
+	
+	if(shouldStopPlaying){
+		playing = false;
+		shouldStopPlaying = false;
+		player.stop();
+		music.stop();
+		return;
 	}
 	
 	if(!loadScene( sceneToLoad )){
@@ -442,7 +454,6 @@ void testApp::switchPortrait(){
 	player.getVideoPlayer()->setSpeed(.5);
 	player.getVideoPlayer()->setVolume(0.);
 
-	sound.stop();
 
 	string soundPath = "Portraits/_SOUND/" + ofToLower(player.getScene().name) + ".aif";
 	hasSound = sound.loadMovie(soundPath);
@@ -475,8 +486,16 @@ void testApp::draw(){
 	
     if(player.isLoaded()){
         
+		if(playFullScreen && fbo.getWidth() != 1920){
+			fbo.allocate(1920, 1080, GL_RGB, 4);
+		}
 		fbo.begin();
-		ofClear(1.,.1,.1,1);
+		if(playFullScreen){
+			ofClear(0);
+		}
+		else{
+			ofClear(1., .1, .1, 1);
+		}
 		
 		//BACKDROP
 		ofSetColor(ofColor::black);
@@ -490,10 +509,15 @@ void testApp::draw(){
 		ofSetColor(ofColor::white);
 		glDisable(GL_DEPTH_TEST);
 		for(int i = 0; i < screens.size(); i++){
-			screens[i]->getCameraRef().begin(ofRectangle(screens[i]->rect.x,
-														 fbo.getHeight() - screens[i]->rect.y - screens[i]->rect.height,
-														 screens[i]->rect.width,
-														 screens[i]->rect.height));
+//			if(playFullScreen){
+//				screens[i]->getCameraRef().begin(ofRectangle(0,0,1920,1080));
+//			}
+//			else{
+				screens[i]->getCameraRef().begin(ofRectangle(screens[i]->rect.x,
+															 fbo.getHeight() - screens[i]->rect.y - screens[i]->rect.height,
+															 screens[i]->rect.width,
+															 screens[i]->rect.height));
+//			}
 			renderer.bindRenderer();
 			
 			renderer.getShader().setUniform1f("flowPosition", -flowSpeed * ofGetElapsedTimef());
@@ -519,9 +543,7 @@ void testApp::draw(){
 					attenuate = ofMap( nextPortraitTime - ofGetElapsedTimef(), .5, 0, 1.0, 0.0, true)
 							  * ofMap( ofGetElapsedTimef() - portraitChangedTime, 0, .5, .0, 1.0, true);
 				}
-
 			}
-
 
 			renderer.getShader().setUniform1f("maxExtend",*screens[i]->maxExtend * attenuate);
 
@@ -552,37 +574,64 @@ void testApp::draw(){
 			
 			if(hasSubtitles){
 				ofPushStyle();
-				
 				ofEnableAlphaBlending();
-				ofSetColor(0, 30);
-				ofRect(led1.rect.x,led1.rect.getMaxY()-50,led1.rect.width,50);
-				ofRect(led2.rect.x,led2.rect.getMaxY()-50,led2.rect.width,50);
-				
-				ofSetColor(0);
-				titles.draw(led1.rect.getCenter().x , led1.rect.getMaxY()-28);
-				titles.draw(led2.rect.getCenter().x , led2.rect.getMaxY()-28);
+				if(playFullScreen){
+					ofRectangle fullScreenSubtitles(0,1080-90,1920,90);
+					
+					ofSetColor(0, 30);
+					ofRect(fullScreenSubtitles);
+					
+					ofSetColor(0);
+					titles.draw(fullScreenSubtitles.getCenter().x , fullScreenSubtitles.getMaxY()-63);
+					
+					ofSetColor(255);
+					titles.draw(fullScreenSubtitles.getCenter().x+2, fullScreenSubtitles.getMaxY()-65);
+				}
+				else{
+					ofSetColor(0, 30);
+					ofRect(led1.rect.x,led1.rect.getMaxY()-50,led1.rect.width,50);
+					ofRect(led2.rect.x,led2.rect.getMaxY()-50,led2.rect.width,50);
+					
+					ofSetColor(0);
+					titles.draw(led1.rect.getCenter().x , led1.rect.getMaxY()-28);
+					titles.draw(led2.rect.getCenter().x , led2.rect.getMaxY()-28);
 
-				ofSetColor(255);
-				titles.draw(led1.rect.getCenter().x+2, led1.rect.getMaxY()-30);
-				titles.draw(led2.rect.getCenter().x+2, led2.rect.getMaxY()-30);
+					ofSetColor(255);
+					titles.draw(led1.rect.getCenter().x+2, led1.rect.getMaxY()-30);
+					titles.draw(led2.rect.getCenter().x+2, led2.rect.getMaxY()-30);
+				}
 				
 				ofPopStyle();
 			}
+			
+//			if (playFullScreen) {
+//				break;
+//			}
 		}
 
 		//MASK
-		ofEnableAlphaBlending();
-		for(int i = 0; i < screens.size(); i++){
-			if(screens[i]->mask.isAllocated()){
-				screens[i]->mask.draw(screens[i]->rect);
+		if(!playFullScreen){
+			ofEnableAlphaBlending();
+			for(int i = 0; i < screens.size(); i++){
+				if(screens[i]->mask.isAllocated()){
+					screens[i]->mask.draw(screens[i]->rect);
+				}
 			}
 		}
 
 		fbo.end();
 		
 		syphonServer.publishTexture(&fbo.getTextureReference());
+		if(playFullScreen){
+			ofBackground(0);
+		}
+
+		fbo.draw(0, 0, 1920,1080);
 		
-		fbo.draw(0, 0);
+		
+		if (playFullScreen) {
+			return;
+		}
     }
 
 	ofDrawBitmapString("name " + player.getScene().name +
@@ -619,8 +668,15 @@ void testApp::draw(){
 	ofCircle( headPositions[player.getScene().name] * .25 + depthRect.getMin(), 7);
 	ofPopStyle();
 	
-    gui.draw();
+	gui.draw();
 	
+	if(shouldStopPlaying){
+		ofPushStyle();
+		ofSetColor(255,200,150);
+		ofDrawBitmapString("PLAYBACK WILLS TOP AFTER CURRENT PORTRAIT", led2.rect.x, led2.rect.getMaxY() + 25);
+		ofPopStyle();
+	}
+
 
 }
 
@@ -628,9 +684,12 @@ void testApp::draw(){
 void testApp::keyPressed(int key){
 	
     if(key == ' '){
-//        player.togglePlay();
+
 		if(!playing){
 			shouldStartPlaying = true;
+		}
+		else{
+			shouldStopPlaying = true;
 		}
     }	
 	if(key == 'R'){
@@ -666,6 +725,36 @@ void testApp::keyPressed(int key){
 			music.setVolume(1.0);
 		}
 		soundPlaying = !soundPlaying;
+	}
+	
+	if(key == 'F'){
+		playFullScreen = !playFullScreen;
+		ofToggleFullscreen();
+		//mutate the screens
+		
+		led1.rect = ofRectangle(0, 0, 1920-720,540);
+		led1.debugLocation.x = led1.rect.getMaxX();
+		led1.debugLocation.y = led1.rect.getMaxY()-70;
+		led1.maxExtend = &maxExtendLED;
+		led1.varianceEffect = &varianceEffectLED;
+		
+		led2.rect = ofRectangle(0, 540, 1920-720,540);
+		led2.debugLocation.x = led2.rect.getMaxX();
+		led2.debugLocation.y = led2.rect.getY();
+		led2.maxExtend = &maxExtendLED;
+		led2.varianceEffect = &varianceEffectLED;
+		
+		centerFacade.rect = ofRectangle(1920-720, 0,720,1080);
+		centerFacade.debugLocation.x = centerFacade.rect.getX();
+		centerFacade.debugLocation.y = centerFacade.rect.getY()-60;
+		centerFacade.maxExtend = &maxExtendFacade;
+		centerFacade.varianceEffect = &varianceEffectFacade;
+
+		titles.setup("subtitles/AxisStd-Regular.otf", 15);
+
+		//delete left and right
+		screens.erase( screens.begin() + 4);
+		screens.erase( screens.begin() + 2);
 	}
 }
 
